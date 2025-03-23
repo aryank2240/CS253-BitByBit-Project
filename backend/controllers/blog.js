@@ -79,47 +79,66 @@ async function updateBlog(req , res){
       }
 }
 
-async function addCommentOrTags(req , res){
-    try {
-        const id = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).json({ error: "Invalid blog ID" });
-        }
-        const blog = await Blog
-          .findOne({ _id: id });
-        if (!blog) return res.status(404).json({ error: "Blog not found" });
-        const tag_id = req.body.tag_id;
-        const comment_id = req.body.comment_id;
-        if (tag_id == null && comment_id == null) return res.status(400).json({ error: "Tag_id or Comment_id is required" });
-        if (tag_id != null) {
-          const tag = await Tag.findOne({
-            _id:
-              tag_id
-          });
-          if (!tag) return res.status(404).json({ error: "Tag not found" });
+
+async function addCommentOrTags(req, res) {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blog ID" });
+    }
+
+    const blog = await Blog.findById(id);
+    if (!blog) return res.status(404).json({ error: "Blog not found" });
+
+    const { tag_name, comment_id } = req.body;
+
+    if (!tag_name && !comment_id) {
+      return res.status(400).json({ error: "Tag name or Comment ID is required" });
+    }
+
+    if (tag_name) {
+      // Check if the tag already exists
+      let tag = await Tag.findOne({ name: tag_name });
+
+      // If the tag does not exist, create it
+      if (!tag) {
+        tag = new Tag({ name: tag_name, blogs: [blog._id] });
+        await tag.save();
+      } else {
+        // If it exists, update its blogs array
+        if (!tag.blogs.includes(blog._id)) {
           tag.blogs.push(blog._id);
           await tag.save();
-          blog.tags.push(tag._id);
-          await blog.save();
         }
-        else {
-          console.log("Tag_id is required");
-        }
-        if (comment_id != null) {
-          const comment = await Comment.findOne({ _id: comment_id });
-          if (!comment) return res.status(404).json({ error: "Comment not found" });
-          blog.comments.push(comment._id);
-          await blog.save();
-        }
-        else {
-          console.log("Comment_id is required");
-        }
-        res.json(blog);
       }
-      catch (err) {
-        res.status(500).json({ error: err });
-        console.log(err);
+
+      // Add the tag ID to the blog if it's not already there
+      if (!blog.tags.includes(tag._id)) {
+        blog.tags.push(tag._id);
+        await blog.save();
       }
+    }
+
+    if (comment_id) {
+      const comment = await Comment.findById(comment_id);
+      if (!comment) return res.status(404).json({ error: "Comment not found" });
+
+      // Add the comment to the blog
+      if (!blog.comments.includes(comment._id)) {
+        blog.comments.push(comment._id);
+        await blog.save();
+      }
+    }
+
+    res.json(blog);
+  } catch (err) {
+    console.error("Error in addCommentOrTags:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
+
+export default addCommentOrTags;
+
 
 export {createBlog , getBlog , deleteBlog , updateBlog , addCommentOrTags}
