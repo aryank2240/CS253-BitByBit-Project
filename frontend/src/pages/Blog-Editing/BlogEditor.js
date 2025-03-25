@@ -6,8 +6,12 @@ import { FaCheckCircle } from "react-icons/fa";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
+import {jwtDecode} from "jwt-decode";
+
+
 
 const BlogEditor = () => {
+  
   const { id: blogId } = useParams(); // Extract blogId from URL
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -17,12 +21,38 @@ const BlogEditor = () => {
   const [isPublished, setIsPublished] = useState(true);
   const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+
+      if (decoded.exp < currentTime) {
+        localStorage.removeItem("jwtToken");
+        navigate("/login");
+      } else {
+        setUser(decoded); // Ensure this contains the expected fields
+      }
+    } catch (error) {
+      console.error("Invalid token:", error);
+      localStorage.removeItem("jwtToken");
+      navigate("/login");
+    }
+  }, [navigate]); // Ensure `navigate` is included in dependencies
 
   // Fetch blog details
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/blog/${blogId}`);
+        const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`);
         const blogData = response.data;
         setTitle(blogData.title);
         setContent(blogData.content);
@@ -42,7 +72,7 @@ const BlogEditor = () => {
     if (e.key === "Enter" && newTag.trim() !== "") {
       try {
         setLoading(true);
-        const response = await axios.put(`http://localhost:5000/blog/add/${blogId}`, {
+        const response = await axios.put(`http://localhost:5000/api/blog/add/${blogId}`, {
           tag_name: newTag.trim(),
         });
 
@@ -61,7 +91,7 @@ const BlogEditor = () => {
   // Handle tag removal
   const handleRemoveTag = async (tagToRemove) => {
     try {
-      await axios.put(`http://localhost:5000/blog/remove/${blogId}`, {
+      await axios.put(`http://localhost:5000/api/blog/remove/${blogId}`, {
         tag_name: tagToRemove,
       });
   
@@ -75,7 +105,7 @@ const BlogEditor = () => {
   // Save Draft
   const handleSaveDraft = async () => {
     try {
-      await axios.patch(`http://localhost:5000/blog/${blogId}`, {
+      await axios.patch(`http://localhost:5000/api/blog/${blogId}`, {
         title,
         content,
         isPublished: false,
@@ -94,7 +124,7 @@ const BlogEditor = () => {
     }
   
     try {
-      await axios.patch(`http://localhost:5000/blog/${blogId}`, {
+      await axios.patch(`http://localhost:5000/api/blog/${blogId}`, {
         title,
         content,
         isPublished: true,
@@ -112,7 +142,7 @@ const BlogEditor = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this blog?")) {
       try {
-        await axios.delete(`http://localhost:5000/blog/${blogId}`);
+        await axios.delete(`http://localhost:5000/api/blog/${blogId}`);
         alert("Blog Deleted!");
         navigate("/"); // Redirect after deletion
       } catch (error) {
@@ -125,7 +155,7 @@ const BlogEditor = () => {
     <div className="blog-editor">
       <div className="editor-header">
         <h2>Edit Your Blog ✏️</h2>
-        <p>Published 2 days ago • By X_AE_B-221</p>
+        <p>Published 2 days ago •{user ? user.id : "Loading..."} </p>
         <div className="status">
           <FaCheckCircle className="icon" /> Saved
         </div>

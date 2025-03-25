@@ -41,6 +41,10 @@ const userSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Blog'
     }],
+    SavedBlogs:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Blog'
+    }],
 });
 
 export default mongoose.model('User',userSchema);

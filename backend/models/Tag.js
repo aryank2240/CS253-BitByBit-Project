@@ -5,6 +5,10 @@ const tagSchema=new mongoose.Schema({
         type:String,
         required:true
     },
+    count:{
+        type:Number,
+        default:0   
+    },
     blogs:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Blog'

@@ -1,0 +1,89 @@
+.sidebar {
+    background: white;
+    padding: 24px;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    height:50%;
+}
+
+.sidebar-section {
+    margin-bottom: 30px;
+}
+
+.sidebar-section:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-header h3 {
+    color: var(--primary-color);
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.see-all-link {
+    color: var(--accent-color);
+    font-size: 0.9em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.see-all-link:hover {
+    text-decoration: underline;
+}
+
+.tags-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tag-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--background-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tag-item:hover {
+    background: var(--accent-light);
+}
+
+.tag-name {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.tag-count {
+    color: var(--secondary-color);
+    font-size: 0.9em;
+}
+
+.trending-list {
+    display: grid;
+    gap: 10px;
+}
+
+.trending-item {
+    padding: 12px;
+    background: var(--background-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.trending-item:hover {
+    background: #f0f0f0;
+}

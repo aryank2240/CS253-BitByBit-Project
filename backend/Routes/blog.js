@@ -1,12 +1,14 @@
 import express from 'express'
 const router = express.Router({ mergeParams: true });
-import { createBlog, getBlog, deleteBlog, updateBlog, addCommentOrTags } from '../controllers/blog.js';
+import { createBlog, getBlog, deleteBlog, updateBlog, addCommentOrTags,getTopBlogs } from '../controllers/blog.js';
 
 router.post("/post", async (req, res) => {
   createBlog(req, res);
 });
 
-
+router.get("/home", async (req, res) => {
+  getTopBlogs(req, res);
+});
 router.get("/:id", async (req, res) => {
   getBlog(req, res);
 });

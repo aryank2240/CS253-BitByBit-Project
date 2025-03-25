@@ -11,6 +11,7 @@ async function postComment(req, res) {
     
         if (!blog) { return res.status(404).json({ error: "Blog not found" }) }
     
+        
     
         const comment = new Comment(newComment);
         await comment.save()

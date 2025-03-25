@@ -3,6 +3,7 @@ import User from './../models/User.js'
 import Tag from './../models/Tag.js'
 import Comment from './../models/Comment.js'
 import mongoose from 'mongoose';
+import { get } from 'http';
 
 async function createBlog(req , res){
     try {
@@ -23,9 +24,23 @@ async function createBlog(req , res){
       catch (err) {
     
         res.status(500).json({ error: err });
-        console.log(err);
+        // console.log(err); // Consider using a proper logging mechanism
     }
 }
+
+
+async function getTopBlogs(req , res){
+    try {
+        const blogs = await Blog.find().sort({Upvote: -1}).limit(8);
+        if (blogs.length === 0) return res.status(404).json({ error: "No blogs found" });
+        res.json(blogs); 
+      }
+      catch (err) {
+        res.status(500).json({ error: err });
+        console.log(err);
+      }
+}
+
 
 async function getBlog(req , res){
      try {
@@ -109,6 +124,7 @@ async function addCommentOrTags(req, res) {
         // If it exists, update its blogs array
         if (!tag.blogs.includes(blog._id)) {
           tag.blogs.push(blog._id);
+          tag.count = tag.count + 1
           await tag.save();
         }
       }
@@ -138,7 +154,5 @@ async function addCommentOrTags(req, res) {
   }
 }
 
-export default addCommentOrTags;
 
-
-export {createBlog , getBlog , deleteBlog , updateBlog , addCommentOrTags}
+export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags}
