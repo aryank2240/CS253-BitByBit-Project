@@ -42,9 +42,6 @@ const Sidebar = () => {
       <div className="sidebar-section">
         <div className="sidebar-header">
           <h3>Popular Tags</h3>
-          <a href="/tags" className="see-all-link">
-            See All →
-          </a>
         </div>
         
         <div className="tags-container">

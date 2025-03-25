@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import './Admin.css';
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
+
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -14,81 +17,166 @@ const Admin = () => {
   const [actionType, setActionType] = useState(null);
   const [selectedBlogId, setSelectedBlogId] = useState(null);
   const [warningMessage, setWarningMessage] = useState('');
+  const [user,setUser]= useState('');
+  const [blog, setBlog]= useState([]);
+  const [followedBlogs, setFollowedBlogs] = useState([]);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
+  const [savedBlogs, setSavedBlogs] = useState([]);
+  const [reportedBlogs, setReportedBlogs] = useState([]);
+  const [err, setError]= useState("");
 
   // Check if user is admin
+
+
+
   useEffect(() => {
-    // This should be replaced with your actual admin authentication logic
-    const isAdmin = localStorage.getItem('isAdmin') === 'true';
-    if (!isAdmin) {
-      navigate('/');
+      const token = localStorage.getItem("jwtToken");
+  
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+  
+      try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+  
+        if (decoded.exp < currentTime || decoded.role==='user') {
+          localStorage.removeItem("jwtToken");
+          navigate("/login");
+        } else {
+          setUser(decoded); // Ensure this contains the expected fields
+        }
+      } catch (error) {
+        console.error("Invalid token:", error);
+        localStorage.removeItem("jwtToken");
+        navigate("/login");
+      }
+    }, [navigate]);
+
+
+  
+    useEffect(() => {
+      const fetchSavedBlog = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/api/user/${user._id}/SavedBlogs`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }).then((res) => {
+            setSavedBlogs(res.data);
+            console.log(res.data);
+          });
+        } catch (error) {
+          console.error("Error fetching saved blogs:", error);
+        }
+      };
+      fetchSavedBlog();
+    }, [user]);
+    
+
+    useEffect(() => {
+      const fetchBlogs = async () => {
+        try {
+          const response = await axios.get('http://localhost:5000/api/blog/home', {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }).then((res) => {
+            setBlog(res.data);
+            console.log(res.data);
+          });
+        } catch (error) {
+          console.error('Error fetching blogs:', error);
+          setError('Error fetching blogs');
+        } 
+      };
+  
+      fetchBlogs();
+    }, []);
+
+    async function removeBlog(blogId){
+      try{
+        const response = await axios.delete(`http://localhost:5000/api/blog/${blogId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        }).then((res) => {
+          console.log(res.data);
+        });
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+      } 
     }
-  }, [navigate]);
 
-  // Mock data for blogs
-  const [blogs] = useState([
-    {
-      id: 1,
-      author: "X_AE_A-13",
-      role: "Product Designer, slothUI",
-      title: "UI Design Trends for 2025",
-      content: "As we look ahead to 2025, several exciting trends are shaping the future of UI design.",
-      tags: ["#amazing", "#uiux"],
-      upvotes: 15,
-      downvotes: 3,
-      comments: 25,
-      time: "2 hours ago",
-      reportCount: 3,
-      reports: [
-        { reason: "Inappropriate content", reportedBy: "user1" },
-        { reason: "Spam", reportedBy: "user2" },
-        { reason: "Misleading", reportedBy: "user3" }
-      ]
-    },
-    // ... other blog posts
-  ]);
+    useEffect(() => {
+      const fetchReportedBlogs = async () => {
+        try {
+           await axios.get('http://localhost:5000/api/blog/reported', {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }).then((res) => {
+            setReportedBlogs(res.data);
+            console.log(res.data);
+          });
+        } catch (error) {
+          console.error('Error fetching Reported blogs:', error);
+          setError('Error fetching reported blogs');
+        } 
+      };
+  
+      fetchReportedBlogs();
+    }, []);
+    
+    useEffect(() => {
+        const fetchFollowedBlogs = async () => {
+          try {
+            const response = await axios.get(`http://localhost:5000/api/user/${user._id}/followedBlogs`);
+            setFollowedBlogs(response.data);
+          } catch (error) {
+            console.error("Error fetching followed blogs:", error);
+          }
+        };
+      }, [user]);
+    
 
-  const popularTags = [
-    { name: "Campus", count: "112 blogs" },
-    { name: "Events", count: "109 blogs" },
-    { name: "Sports", count: "87 blogs" },
-    { name: "Lost&Found", count: "84 blogs" },
-    { name: "Buy&Sell", count: "78 blogs" }
-  ];
+        useEffect(() => {
+          if(viewMode === 'saved') {
+            setFilteredBlogs(savedBlogs);
+          }
+          else if(viewMode === 'reported'){
+            setFilteredBlogs(reportedBlogs);
+          }
+          else{
+            if (activeTab === 'forYou') {
+              setFilteredBlogs(blog);
+            } else if (activeTab === 'following') {
+              setFilteredBlogs(followedBlogs);
+          }
+        }
+          
+        }, [activeTab, blog, followedBlogs,savedBlogs, viewMode]);
+  
+        const getPageTitle = () => {
+          switch (viewMode) {
+            case 'saved':
+              return 'Saved Blogs';
+            case 'reported':
+              return 'Reported';
+            default:
+              return activeTab === 'forYou' ? 'For You' : 'Following';
+          }
+        };
+
 
   const handleSearch = () => {
     if (searchTerm.trim()) {
       navigate(`/admin/search?query=${encodeURIComponent(searchTerm.trim())}`);
-    }
-  };
-
-  const handleAction = (blogId, type) => {
-    setSelectedBlogId(blogId);
-    setActionType(type);
-    setShowConfirmDialog(true);
-  };
-
-  const handleConfirmAction = () => {
-    if (actionType === 'warning') {
-      // Send warning to user
-      console.log(`Warning sent for blog ${selectedBlogId}: ${warningMessage}`);
-    } else if (actionType === 'remove') {
-      // Remove the blog
-      console.log(`Removing blog ${selectedBlogId}`);
-    }
-    setShowConfirmDialog(false);
-    setWarningMessage('');
-    setSelectedBlogId(null);
-    setActionType(null);
-  };
-
-  const getPageTitle = () => {
-    switch (viewMode) {
-      case 'saved':
-        return 'Saved Blogs';
-      case 'reported':
-        return 'Reported Posts';
-      default:
-        return activeTab === 'forYou' ? 'For You' : 'Following';
     }
   };
 
@@ -131,15 +219,10 @@ const Admin = () => {
                 onClick={() => setViewMode(prev => prev === 'reported' ? 'default' : 'reported')}
               >
                 <FiBell />
-                {viewMode !== 'reported' && <span className="report-badge">3</span>}
-              </button>
-              <button className="icon-button" onClick={() => navigate('/admin/settings')}>
-                <FiSettings />
+                
               </button>
               <button className="icon-button admin-profile">
-                <img 
-                  src="https://via.placeholder.com/40" 
-                  alt="Admin Profile" 
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Admin Profile" className="admin-icon" 
                   style={{ width: '100%', height: '100%', borderRadius: '50%' }}
                 />
                 <span className="admin-indicator"></span>
@@ -178,29 +261,21 @@ const Admin = () => {
       {/* Main Content */}
       <div className="main-content-container">
         <div className="feed-column">
-          {blogs.map(blog => (
-            <div key={blog.id} className="blog-wrapper">
-              <Blog blog={blog} />
+          {filteredBlogs.map(blog => (
+            <div key={blog?._id} className="blog-wrapper">
+              <Blog blogId={blog?._id} />
               {viewMode === 'reported' && (
                 <div className="blog-actions">
                   <div className="report-info">
-                    <span className="report-count">Reported {blog.reportCount} Times</span>
-                    <button className="view-reports-btn" onClick={() => console.log('View reports')}>
-                      View Reports
-                    </button>
+                    <span className="report-count">Reported {blog?.ReportCount} Times</span>
                   </div>
                   <div className="action-buttons">
                     <button 
-                      className="action-button warning"
-                      onClick={() => handleAction(blog.id, 'warning')}
-                    >
-                      <FiAlertCircle /> Give Warning
-                    </button>
-                    <button 
                       className="action-button remove"
-                      onClick={() => handleAction(blog.id, 'remove')}
+                      onClick={()=>{removeBlog(blog?._id)}}
                     >
                       <FiTrash2 /> Remove Post
+                      
                     </button>
                   </div>
                 </div>
@@ -209,7 +284,7 @@ const Admin = () => {
           ))}
         </div>
 
-        <Sidebar popularTags={popularTags} />
+        <Sidebar  />
       </div>
 
       {/* Confirmation Dialog */}
@@ -232,7 +307,6 @@ const Admin = () => {
               </button>
               <button 
                 className={`confirm-btn ${actionType === 'warning' ? 'warning' : 'remove'}`}
-                onClick={handleConfirmAction}
               >
                 Confirm
               </button>

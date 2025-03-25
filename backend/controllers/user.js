@@ -16,12 +16,12 @@ async function createUser(req, res) {
     const { name, email, password, role} = req.body;
 
     if (!iitkEmailRegex.test(email)) {
-      return res.status(400).json({ error: "Only for IITK junta" });
+      return res.status(400).json({ message: "Only for IITK junta" });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,13 +32,16 @@ async function createUser(req, res) {
       password: hashedPassword,
       role
     });
-
+    console.log(name,email,password);
+    if(!name || !email || !password){
+      return res.status(404).json({message:"You are missing one of the fields"});
+    }
     await newUser.save();
 
     res.status(201).json({ message: "User created successfully", user: newUser });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
 }
 
@@ -110,12 +113,13 @@ async function loginUser(req, res) {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
     console.log(user);
+  if(!password){ return res.status(404).json({message: "Password missing."})}
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id, name: user.name, email: user.email  }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id, name: user.name, email: user.email, role:user.role  }, SECRET_KEY, { expiresIn: "1h" });
 
     res.json({ message: "Login successful", token, user });
   } catch (err) {

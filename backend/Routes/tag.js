@@ -5,14 +5,14 @@ import { postTag,getTag,deleteTag,patchTag,removeTag,putTag,getPopularTags} from
 router.post("/post", async (req, res) => {
   postTag(req, res);
 });
-
+router.get("/popular", async (req, res) => {
+  getPopularTags(req, res);
+});
 router.get("/:id", async (req, res) => {
   getTag(req, res);
 });
 
-router.get("/popular", async (req, res) => {
-  getPopularTags(req, res);
-});
+
 
 router.delete("/:id", async (req, res) => {
   deleteTag(req, res);

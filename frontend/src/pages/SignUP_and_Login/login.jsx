@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -27,39 +28,54 @@ const Login = () => {
             
             setTimeout(() => navigate("/"), 2000); // Redirect after 2s
         } catch (error) {
-            console.error("Login Error:", error.response?.data || error.message);
-            setError(error.response?.data?.error || "Invalid email or password");
+            console.error("Login Error:", error.response?.message || error.message);
+            setError(error.response?.data?.message || "Invalid email or password");
         }
     };
 
     return (
-        <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <h2>Login</h2>
-            <form onSubmit={handleLogin} style={{ display: "inline-block" }}>
-                <div>
+         <div className="signup-card">
+                <h2>Log In Your Account</h2>
+                <form onSubmit={handleLogin}>
+                  <div className="form-group">
+                    <label htmlFor="email">Email Address</label>
+                    <div className="input-container">
+        <FaEnvelope className="icon" />
                     <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
+                      type="email"
+                      id="email"
+                      name="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
-                </div>
-                <div>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <div className="input-container">
+                    <FaLock className="icon" />
                     <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
+                      type="password"
+                      id="password"
+                      name="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
-                </div>
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                    </div>
+                  </div>
+                  {error && <p style={{ color: "red" }}>{error}</p>}
                 {success && <p style={{ color: "green" }}>{success}</p>}
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    );
+                  <button type="submit" className="submit-button">
+                    Sign In
+                  </button>
+                </form>
+                <p>
+                  Don't have an account? <a href="/signup">Sign Up</a>
+                </p>
+              </div>
+    )
 };
 
 export default Login;

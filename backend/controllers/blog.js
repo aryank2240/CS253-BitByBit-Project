@@ -154,5 +154,48 @@ async function addCommentOrTags(req, res) {
   }
 }
 
+async function getReportedBlogs(req,res){
+  try{
+    const reportedBlogs = await Blog.find({ ReportCount: { $gt: 1 } });
+    if(!reportedBlogs) res.status(404).json({error:"No Reported Blogs found"});
+    res.json(reportedBlogs);
+  }
+  catch(err){
+    console.error("Error in getReportedBlogs:", err);
+    res.status(500).json({error:"Internal Server Error"});
+  }
+}
 
-export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags}
+const getCommentsForBlog = async (req,res) => {
+  try {
+    const id=req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blog ID" });
+    }
+    const comments = await Comment.find({ blog: id }); // Find all comments linked to blogId
+    if(!comments) res.status(404).json({message:"No comments for this blog"})
+    console.log(comments);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+  }
+};
+
+const getTagForBlog = async (req,res) => {
+  try {
+    const { id } =req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blog ID" });
+    }
+    const tags = await Tag.find({ blogs: id }); // Find all comments linked to blogId
+    if (tags.length === 0) {
+      return res.status(404).json({ message: "No tags for this blog" });
+    }
+    res.json(tags); // Send tags as response
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    res.status(500).json({ message: "Internal server error",error });
+  }
+};
+
+
+export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags, getReportedBlogs, getCommentsForBlog, getTagForBlog}

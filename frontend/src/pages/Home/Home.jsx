@@ -96,6 +96,8 @@ const Home = () => {
     };
   }, [user]);
 
+  
+
   const SaveBlogs = ({ blogId }) => {
     try {
       const save = async () => {

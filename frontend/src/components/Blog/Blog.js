@@ -76,6 +76,7 @@ const Blog = ({ blogId }) => {
     fetchBlog();
   }, [blogId]);
 
+  
 
   return (
     <div className="blog-post" onClick={() => navigate(`/blog/${blog?._id}`)}>
