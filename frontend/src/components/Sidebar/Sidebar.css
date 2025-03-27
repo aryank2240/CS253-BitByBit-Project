@@ -46,7 +46,7 @@
     gap: 12px;
 }
 
-.tag-item {
+.tag-item-sidebar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -55,6 +55,7 @@
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin:10px;
 }
 
 .tag-item:hover {

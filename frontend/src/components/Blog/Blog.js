@@ -4,13 +4,32 @@ import { FiBookmark } from 'react-icons/fi';
 import axios from 'axios';
 import './Blog.css';
 import { jwtDecode } from 'jwt-decode';
-
+import DOMPurify from "dompurify";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw'
 const Blog = ({ blogId }) => {
   const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [user, setUser] = useState(null);
+  const[author,setAuthor]= useState(null);
+  const extractFirstHtmlElement = (html = "") => (html.trim().match(/<(\w+)[^>]*>.*?<\/\1>/s) || [html])[0];
 
- 
+  useEffect(() => {
+    const fetchAuthor= async () => {
+      if(!blog) return 
+      try {
+        const response = await axios.get(`http://localhost:5000/api/user/${blog?.author}`,
+          { headers: { "Content-Type": "application/json" } }
+        );
+        console.log(response.data);
+        setAuthor(response.data);
+      } catch (error) {
+        console.error("Error fetching blog:", error);
+      }
+    };
+    fetchAuthor();
+  }, [blog]);
+
     useEffect(() => {
       console.log(blogId)
       const token = localStorage.getItem("jwtToken");
@@ -81,7 +100,7 @@ const Blog = ({ blogId }) => {
   return (
     <div className="blog-post" onClick={() => navigate(`/blog/${blog?._id}`)}>
       <div className="author-info">
-        {/* <img src={blog.authorImage || 'https://via.placeholder.com/40'} alt={blog.author} /> */}
+        <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={blog?.author} style={{ width: '20px', height: '20px', borderRadius: '50%', border:'black' }} />
         <div className="author-details">
           <h3 className="author-name">{blog?.author_name}</h3>
           <p className="author-role">{blog?.role}</p>
@@ -90,7 +109,9 @@ const Blog = ({ blogId }) => {
       </div>
       
       <h2 className="blog-title">{blog?.title}</h2>
-      <p className="blog-content">{blog?.content}</p>
+      <div  className="blog-content">
+      <ReactMarkdown rehypePlugins={[rehypeRaw]}>{ extractFirstHtmlElement(blog?.content) }</ReactMarkdown>
+      </div>
       
       <div className="blog-footer">
         <div className="vote-section">

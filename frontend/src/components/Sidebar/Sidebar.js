@@ -48,7 +48,7 @@ const Sidebar = () => {
           {popularTags.map((tag, index) => (
             <div 
               key={index} 
-              className="tag-item"
+              className="tag-item-sidebar"
 
             >
               <span className="tag-name">{tag?.name}</span>

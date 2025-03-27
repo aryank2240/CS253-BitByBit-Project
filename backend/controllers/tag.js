@@ -4,22 +4,35 @@ import mongoose from 'mongoose'
 
 async function postTag(req, res) {
   try {
-    const newTag = req.body;
-    const blog = await Blog.findOne({ _id: newTag.blogs });
+    const { name, count, blogs } = req.body; // Destructure correctly
+
+    // Validate required fields
+    if (!name || !count || !blogs) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Check if the blog exists
+    const blog = await Blog.findOne({ _id: blogs }); 
     if (!blog) return res.status(404).json({ error: "Blog not found" });
 
-    const tag = new Tag(newTag);
-    await tag.save();
+    // Create new tag with all required fields
+    const newTag = new Tag({ name, count, blogs });
+    await newTag.save();
 
-    blog.tags.push(tag._id);
+    // Add tag reference to blog
+    blog.tags = blog.tags || []; // Ensure `tags` is an array
+    blog.tags.push(newTag._id);
     await blog.save();
+
+    // Send response with the newly created tag
     res.json(newTag);
   }
   catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
-    console.log(err);
   }
 }
+
 
 async function getTag(req, res) {
   try {

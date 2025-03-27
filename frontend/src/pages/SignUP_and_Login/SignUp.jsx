@@ -24,13 +24,15 @@ const SignUpCard = () => {
         try {
             if (password===confirmPassword){
             const response = await axios.post(
-                "http://localhost:5000/api/user/post",
+                "http://localhost:5000/api/auth/register",
                 { name, email, password,  role: "user"},
                 { headers: { "Content-Type": "application/json" } }
             );
 
             setSuccess(response.data.message);
-            setTimeout(() => navigate("/login"), 2000);
+            setTimeout(() => navigate("/otp", {
+              state: { userId:`${response.data.userId}` },
+            }), 2000);
          }
          else{
             setError("Passwords don't match with each other.")

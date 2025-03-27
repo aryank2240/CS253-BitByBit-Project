@@ -1,31 +1,28 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
 import "./BlogEditor.css";
-import { FaCheckCircle } from "react-icons/fa";
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-import {jwtDecode} from "jwt-decode";
-
-
-
 const BlogEditor = () => {
-  
-  const { id: blogId } = useParams(); // Extract blogId from URL
-  const navigate = useNavigate();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const location = useLocation();
+  const { blogId } = location.state || {};
   const [tags, setTags] = useState([]);
-  const [newTag, setNewTag] = useState("");
-  const [isPublished, setIsPublished] = useState(true);
-  const [isPublic, setIsPublic] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    visibility: "",
+  });
+  const [content, setContent] = useState("");
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  
+  const [blog, setBlog] = useState(null);
+
+  // Check authentication and set user
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
-
     if (!token) {
       navigate("/login");
       return;
@@ -34,163 +31,189 @@ const BlogEditor = () => {
     try {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
-
       if (decoded.exp < currentTime) {
         localStorage.removeItem("jwtToken");
         navigate("/login");
       } else {
-        setUser(decoded); // Ensure this contains the expected fields
+        setUser(decoded);
       }
     } catch (error) {
       console.error("Invalid token:", error);
       localStorage.removeItem("jwtToken");
       navigate("/login");
     }
-  }, [navigate]); // Ensure `navigate` is included in dependencies
+  }, [navigate]);
 
-  // Fetch blog details
+  // Fetch blog details once user is set
   useEffect(() => {
+    if (!user || !blogId) return;
+
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`);
-        const blogData = response.data;
-        setTitle(blogData.title);
-        setContent(blogData.content);
-        setTags(blogData.tags || []);
-        setIsPublished(blogData.isPublished);
-        setIsPublic(blogData.isPublic);
+        const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        setBlog(response.data);
       } catch (error) {
         console.error("Error fetching blog:", error);
       }
     };
 
-    if (blogId) fetchBlog();
-  }, [blogId]);
+    fetchBlog();
+  }, [user, blogId]);
 
-  // Handle new tag input
-  const handleAddTag = async (e) => {
-    if (e.key === "Enter" && newTag.trim() !== "") {
-      try {
-        setLoading(true);
-        const response = await axios.put(`http://localhost:5000/api/blog/add/${blogId}`, {
-          tag_name: newTag.trim(),
-        });
-
-        if (response.status === 200) {
-          setTags([...tags, newTag.trim()]); // Update frontend state
-          setNewTag("");
-        }
-      } catch (error) {
-        console.error("Error adding tag:", error);
-      } finally {
-        setLoading(false);
-      }
+  // Update content and title when blog is set
+  useEffect(() => {
+    if (blog) {
+      setContent(blog.content || "");
+      setFormData((prev) => ({ ...prev, title: blog.title || "" }));
     }
-  };
+  }, [blog]);
 
-  // Handle tag removal
-  const handleRemoveTag = async (tagToRemove) => {
-    try {
-      await axios.put(`http://localhost:5000/api/blog/remove/${blogId}`, {
-        tag_name: tagToRemove,
-      });
-  
-      setTags(tags.filter((tag) => tag !== tagToRemove)); // Update frontend state
-    } catch (error) {
-      console.error("Error removing tag:", error);
-    }
-  };
-  
-
-  // Save Draft
-  const handleSaveDraft = async () => {
-    try {
-      await axios.patch(`http://localhost:5000/api/blog/${blogId}`, {
-        title,
-        content,
-        isPublished: false,
-      });
-      alert("Draft Saved!");
-    } catch (error) {
-      console.error("Error saving draft:", error);
-    }
-  };
-
-  // Publish Blog
-  const handlePublish = async () => {
-    if (!title.trim() || !content.trim()) {
-      alert("Title and content cannot be empty!");
-      return;
-    }
-  
-    try {
-      await axios.patch(`http://localhost:5000/api/blog/${blogId}`, {
-        title,
-        content,
-        isPublished: true,
-      });
-  
-      alert("Blog Published!");
+  // Redirect if user is not the author
+  useEffect(() => {
+    if (blog && user && blog.author !== user?.id) {
       navigate("/");
-    } catch (error) {
-      console.error("Error publishing blog:", error);
+    }
+  }, [blog, user, navigate]);
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "code-block"],
+      ["clean"],
+    ],
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Real-time validation
+    if (!value.trim()) {
+      setErrors((prev) => ({ ...prev, [name]: `${name} is required` }));
+    } else {
+      setErrors((prev) => {
+        const updatedErrors = { ...prev };
+        delete updatedErrors[name];
+        return updatedErrors;
+      });
     }
   };
-  
 
-  // Delete Blog
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this blog?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/blog/${blogId}`);
-        alert("Blog Deleted!");
-        navigate("/"); // Redirect after deletion
-      } catch (error) {
-        console.error("Error deleting blog:", error);
+  const handlePublish = async () => {
+    try {
+      if (!user) return;
+
+      let author_name = user?.name;
+      if (formData.visibility === "Anonymous") {
+        author_name = "Anonymous";
       }
+
+      const title = formData?.title;
+      if (!title) {
+        setErrors((prev) => ({ ...prev, title: "Please give a title" }));
+        return;
+      }
+
+      if (!content) {
+        setErrors((prev) => ({ ...prev, content: "Please write something before publishing" }));
+        return;
+      }
+
+      const author = user?.id;
+      if (!author) {
+        setErrors((prev) => ({ ...prev, user: "User authentication failed" }));
+        return;
+      }
+
+      await axios.patch(
+        `http://localhost:5000/api/blog/${blogId}`,
+        {
+          author,
+          author_name,
+          content,
+          title,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      navigate("/");
+    } catch (err) {
+      setErrors((prev) => ({ ...prev, general: err.response?.data?.message || "Something went wrong" }));
+      console.error(err);
     }
   };
 
   return (
-    <div className="blog-editor">
-      <div className="editor-header">
-        <h2>Edit Your Blog ✏️</h2>
-        <p>Published 2 days ago •{user ? user.id : "Loading..."} </p>
-        <div className="status">
-          <FaCheckCircle className="icon" /> Saved
+    <div className="blog-writer-container">
+      <header className="blog-writer-header">
+        <div className="blog-writer-title">Build Your Blog ✏️</div>
+        <div className="blog-writer-header-controls">
+          <button className="blog-writer-publish-btn" onClick={handlePublish} style={{ cursor: "pointer" }}>
+            Update
+          </button>
+          <div className="blog-writer-avatar" onClick={() => navigate("/user-profile")}>
+            <img
+              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`}
+              alt="Profile"
+              className="profile-image"
+              style={{ height: "40px", width: "40px", cursor: "pointer" }}
+            />
+          </div>
         </div>
-      </div>
-      <input type="text" className="blog-title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      </header>
 
-      {/* Rich Text Editor */}
-      <ReactQuill theme="snow" value={content} onChange={setContent} className="blog-content" />
+      <div className="blog-writer-main">
+        <div className="blog-writer-editor-panel">
+          <div className="blog-writer-page-title">{formData?.title}</div>
 
-      <div className="edit-section">
-        <div>
-          <strong>Status:</strong> {isPublished ? "Published" : "Draft"} <button onClick={() => setIsPublished(!isPublished)}>Edit</button>
+          <ReactQuill
+            value={content}
+            onChange={setContent}
+            modules={modules}
+            preserveWhitespace={true}
+            theme="snow"
+            placeholder="Start writing your blog here..."
+            className="blog-quill-editor"
+          />
         </div>
-        <div>
-          <strong>Visibility:</strong> {isPublic ? "Public" : "Private"} <button onClick={() => setIsPublic(!isPublic)}>Edit</button>
-        </div>
-      </div>
 
-      <div className="tags-section">
-        <strong>Tags</strong>
-        <div className="tags">
-          {tags.map((tag) => (
-            <span key={tag} className="tag">
-              {tag} <button onClick={() => handleRemoveTag(tag)}>x</button>
-            </span>
-          ))}
-        </div>
-        <input type="text" placeholder="Add Tags" value={newTag} onChange={(e) => setNewTag(e.target.value)} onKeyDown={handleAddTag} disabled={loading} />
-      </div>
+        <aside className="blog-writer-sidebar">
+          <form className="blog-writer-form-section">
+            <h3>Form Validation</h3>
+            <label htmlFor="title">Title:</label>
+            <input
+              type="text"
+              name="title"
+              id="title"
+              placeholder="Enter blog title"
+              value={formData?.title}
+              onChange={handleInputChange}
+              className={errors?.title ? "error-input" : ""}
+            />
+            {errors?.title && <span className="error-message">{errors?.title}</span>}
 
-      <div className="buttons">
-        <button className="save-draft" onClick={handleSaveDraft}>Save Draft</button>
-        <button className="edit">Edit</button>
-        <button className="publish" onClick={handlePublish}>Publish</button>
-        <button className="delete" onClick={handleDelete}>Delete</button>
+            <label htmlFor="visibility">Visibility:</label>
+            <select
+              name="visibility"
+              id="visibility"
+              value={formData?.visibility}
+              onChange={handleInputChange}
+              className={errors?.visibility ? "error-input" : ""}
+            >
+              <option value="">Select visibility</option>
+              <option value="Public">Public</option>
+              <option value="Anonymous">Anonymous</option>
+            </select>
+            {errors?.visibility && <span className="error-message">{errors?.visibility}</span>}
+          </form>
+        </aside>
       </div>
     </div>
   );

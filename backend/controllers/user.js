@@ -26,6 +26,7 @@ async function createUser(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    
     const newUser = new User({
       name,
       email,
@@ -44,6 +45,23 @@ async function createUser(req, res) {
     res.status(500).json({ message: "Server error" });
   }
 }
+
+
+async function getBlogsbyUser(req,res){
+  try{
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+    const blogs = await Blog.find({ author: id });
+    res.json(blogs);
+  }
+  catch (err) {
+    res.status(500).json({ error: err });
+    console.log(err);
+  }
+}
+
 
 async function getUser(req, res) {
   try {
@@ -95,9 +113,7 @@ async function updateUser(req, res) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid user ID" });
     }
-    if (req.body.password) {
-      req.body.password = await bcrypt.hash(req.body.password, 10);
-    }
+   
     const user = await User.findOneAndUpdate({ _id: id }, { $set: req.body }, { new: true, runValidators: true });
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
@@ -184,4 +200,4 @@ async function getSavedBlogs(req , res){
 }
 
 
-export { createUser, getUser, deleteUser, updateUser, loginUser, SaveBlogs, getBlogsbyFollowedUsers , getSavedBlogs}
+export { createUser, getUser, deleteUser, updateUser, loginUser, SaveBlogs, getBlogsbyFollowedUsers , getSavedBlogs, getBlogsbyUser}

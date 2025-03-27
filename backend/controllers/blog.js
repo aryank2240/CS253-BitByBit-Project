@@ -12,14 +12,19 @@ async function createBlog(req , res){
         const user = await User.findOne({ _id: newBlog.author });
         if (!user) return res.status(404).json({ error: "User not found" });
         console.log(user);
-    
+        user.blogCount=user.blogCount+1;
         const blog = new Blog(newBlog);
         await blog.save();
         user.Blogs.push(blog._id);
         await user.save();
-        res.json(newBlog);
+        res.json(blog);
     
+    console.log(blog);
+
+
     
+
+
       }
       catch (err) {
     
@@ -64,7 +69,11 @@ async function deleteBlog(req , res){
         if (!mongoose.Types.ObjectId.isValid(id)) {
           return res.status(400).json({ error: "Invalid blog ID" });
         }
-        await User.updateMany({ Blogs: { $in: [id] } }, { $pull: { Blogs: id } });
+        
+        const user = await User.findOne({ _id: newBlog.author });
+        user.blogCount= user.blogCount - 1;
+        user.save();
+        await User.updateMany({ Blogs: { $in: [id] } }, { $pull: { Blogs: id } },{ new: true } );
         await Tag.updateMany({ blogs: { $in: [id] } }, { $pull: { blogs: id } });
         await Comment.deleteMany({ ParentBlogId: id });
         const blogs = await Blog.findOneAndDelete({ _id: id });

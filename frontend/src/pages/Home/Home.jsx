@@ -200,7 +200,7 @@ const Home = () => {
               <input
                 type="text"
                 className="search-input"
-                placeholder="Search for blogs, friends, tags"
+                placeholder="Search for blogs, friends"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -223,9 +223,9 @@ const Home = () => {
               >
                 <FiBookmark />
               </button>
-              <button className="icon-button" onClick={() => navigate('/profile')}>
+              <button className="icon-button" onClick={() => navigate('/user-profile')}>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"
+                  src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`}
                   alt="Anonymous User"
                   className="user-icon"
                   style={{ width: '100%', height: '100%', borderRadius: '50%' }}
