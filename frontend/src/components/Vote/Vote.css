@@ -1,0 +1,51 @@
+.vote-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .vote-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .arrow-up, .arrow-down {
+    font-size: 18px;
+  }
+  
+  /* Default state */
+  .upvote-button, .downvote-button {
+    color: #888;
+  }
+  
+  /* Hover states */
+  .upvote-button:hover {
+    color: #ff8c00; /* Light orange on hover */
+  }
+  
+  .downvote-button:hover {
+    color: #9370db; /* Light violet on hover */
+  }
+  
+  /* Active states - matching the image */
+  .upvoted {
+    color: #ff6600 !important; /* Orange color for upvoted state */
+  }
+  
+  .downvoted {
+    color: #8a2be2 !important; /* Violet color for downvoted state */
+  }
+  
+  .vote-count {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+  }
+  

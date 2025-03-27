@@ -2,101 +2,114 @@ import React, { useState, useEffect } from "react";
 import "./OwnProfile.css";
 import BlogCard from "../../components/Blog/Blog.js";
 import { useNavigate, useParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
+import axios from "axios";
 import Sidebar from "../../components/Sidebar/Sidebar.js";
 import Blog from "../../components/Blog/Blog.js";
-import { FiSearch, FiBell, FiBookmark, FiSettings } from 'react-icons/fi';
+import { FiSearch, FiBell, FiBookmark, FiSettings } from "react-icons/fi";
 
 const AccountProfilePage = () => {
-
-   const { id: accountId } = useParams();
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { id: accountId } = useParams();
   const navigate = useNavigate();
   const [account, setAccount] = useState(null);
   const [userBlogs, setUserBlogs] = useState([]);
   const [name, setName] = useState("");
-  const [searchTerm, setSearchTerm] = useState('');
-  const [user, setUser]= useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        const token = localStorage.getItem("jwtToken");
-    
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-    
-        try {
-          const decoded = jwtDecode(token);
-          const currentTime = Date.now() / 1000;
-    
-          if (decoded.exp < currentTime) {
-            localStorage.removeItem("jwtToken");
-            navigate("/login");
-          } else {
-            setUser(decoded);
-          }
-        } catch (error) {
-          console.error("Invalid token:", error);
-          localStorage.removeItem("jwtToken");
-          navigate("/login");
-        }
-      }, [navigate]);
-    
-  useEffect(() => {
-    const getAccount= async ()=>{
-        try{
-            const res = await axios.get(`http://localhost:5000/api/user/${accountId}`);
-            setAccount(res.data);
-            if (name == '') {
-                setName(res.data?.name);// Ensure this contains the expected fields
-            }
-        }
-        catch(e){
-            console.log("Error fetching the account's data");
-        }
-
-    };
-    getAccount();
-
-  }, [accountId]);
-
-
-
-  const editUser = async (e) => {
+  // Updated handleFollowClick function using template literals
+  const handleFollowClick = async () => {
+    if (!user) {
+      console.log("User not found");
+      return;
+    }
+    setLoading(true);
     try {
-      if (!user) return;
-      const res = axios.patch(`http://localhost:5000/api/user/${account._id}`,
-        {
-          name
-        },
-        {
-          headers: { "Content-Type": "application/json" }
-        })
+      const res = await axios.put(
+        `http://localhost:5000/api/user/${user?.id}/follow`,
+        { accountId },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      if (res.status === 200) {
+        // Update isFollowing using the backend response
+        setIsFollowing(res.data.following);
+        // Update the account's followersCount using the backend data
+        setAccount((prev) => ({
+          ...prev,
+          followersCount: res.data.followersCount,
+        }));
+      } else {
+        console.error("Unexpected response:", res);
+      }
+    } catch (err) {
+      console.error("Error during follow/unfollow:", err);
+    } finally {
+      setLoading(false);
     }
-    catch (e) {
-      console.error(e);
-    }
-  }
+  };
 
-
-
+  // Check for authentication and decode token to set user state
   useEffect(() => {
-    const getBlogsbyUser = async () => {
-      if (!account) return; // Ensure account exists before making the API call
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const decoded = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      if (decoded.exp < currentTime) {
+        localStorage.removeItem("jwtToken");
+        navigate("/login");
+      } else {
+        setUser(decoded);
+      }
+    } catch (error) {
+      console.error("Invalid token:", error);
+      localStorage.removeItem("jwtToken");
+      navigate("/login");
+    }
+  }, [navigate]);
 
+  // Fetch account details for display
+  useEffect(() => {
+    const getAccount = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/${account._id}/blogs`);
-        console.log(account?.followersCount);
-        setUserBlogs(res.data);
-      } catch (error) {
-        console.error(error);
+          `http://localhost:5000/api/user/${accountId}`,
+          { headers: { "Content-Type": "application/json" } }
+        );
+        setAccount(res?.data);
+        if (!name) {
+          setName(res?.data?.name);
+        }
+        if (user && res?.data?._id) {
+          setIsFollowing( res?.data?.followers.includes(user?.id));
+        }
+      } catch (e) {
+        console.error("Error fetching the account's data:", e);
       }
     };
+    getAccount();
+  }, [accountId, user, name]);
 
+  // Fetch blogs posted by the account user
+  useEffect(() => {
+    const getBlogsbyUser = async () => {
+      if (!account) return;
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/user/${accountId}/blogs`
+        );
+        setUserBlogs(res.data);
+      } catch (error) {
+        console.error("Error fetching user blogs:", error);
+      }
+    };
     getBlogsbyUser();
-  }, [account]);
+  }, [account, accountId]);
 
   const handleSearch = () => {
     if (searchTerm.trim()) {
@@ -104,17 +117,8 @@ const AccountProfilePage = () => {
     }
   };
 
-
-
-
- 
-
-
-
   return (
     <div className="profile-container">
-
-
       <div className="search-add-container">
         <div className="search-container">
           <input
@@ -123,7 +127,7 @@ const AccountProfilePage = () => {
             placeholder="Search for blogs, friends"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           />
           <button className="search-button" onClick={handleSearch}>
             <FiSearch className="search-icon" />
@@ -131,32 +135,47 @@ const AccountProfilePage = () => {
         </div>
       </div>
 
-
       <div className="main-content">
-
         <div className="left-section">
-
           <div className="profile-section">
-            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${account?.name}`} alt="Profile" className="profile-image" />
-
+            <img
+              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${account?.name}`}
+              alt="Profile"
+              className="profile-image"
+            />
+            <div>
+              <h2>{account?.name}</h2>
+              <p>{account?.email}</p>
+            </div>
             <p>{account?.blogCount} Blogs</p>
             <div className="follow-info">
-              <span>{account?.followingCount} Following</span> | <span>{account?.followersCount} Followers</span>
+              <span>{account?.followingCount} Following</span> |{" "}
+              <span>{account?.followersCount} Followers</span>
             </div>
+            <button
+              className={`follow-btn ${isFollowing ? "following" : ""}`}
+              onClick={handleFollowClick}
+              disabled={loading}
+            >
+              {loading
+                ? "Processing..."
+                : isFollowing
+                ? "Following"
+                : "Follow"}
+            </button>
           </div>
-
 
           <div className="blogs-section">
-            <h3 style={{marginLeft:'15px'}}>My Blogs</h3>
-            {userBlogs.map(blog => (
-              <div key={blog?._id} className="blog-wrapper">
-                <Blog blogId={blog?._id} />
-              </div>
-
-            ))}
+            <h3 style={{ marginLeft: "15px" }}>My Blogs</h3>
+            {userBlogs
+              .filter((blog) => blog?.author_name !== "Anonymous")
+              .map((blog) => (
+                <div key={blog?._id} className="blog-wrapper">
+                  <Blog blogId={blog?._id} />
+                </div>
+              ))}
           </div>
         </div>
-
 
         <div className="right-section">
           <div className="writer-suggestions">

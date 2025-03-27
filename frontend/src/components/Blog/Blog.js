@@ -7,13 +7,31 @@ import { jwtDecode } from 'jwt-decode';
 import DOMPurify from "dompurify";
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'
+
+import VoteComponent from '../Vote/Vote';
+
 const Blog = ({ blogId }) => {
   const navigate = useNavigate();
   const [blog, setBlog] = useState(null);
   const [user, setUser] = useState(null);
   const[author,setAuthor]= useState(null);
-  const extractFirstHtmlElement = (html = "") => (html.trim().match(/<(\w+)[^>]*>.*?<\/\1>/s) || [html])[0];
+  const [isSaved, setIsSaved] = useState(false);
 
+  const extractFirstHtmlElement = (html = "") => (html.trim().match(/<(\w+)[^>]*>.*?<\/\1>/s) || [html])[0];
+  const saveBlogToUser = async ( blogId) => {
+    if(!user) return;
+    if(!blogId) return;
+    try {
+        const response = await axios.put(`http://localhost:5000/api/user/${user?.id}/saveBlogs`, {
+            blogId:blogId,
+        });
+        console.log("Blog saved to user successfully:", response.data);
+        setIsSaved(true) ; // Return updated user data
+    } catch (error) {
+        console.error("Error saving blog to user:", error.response?.data?.message || error.message);
+        throw error;
+    }
+};
   useEffect(() => {
     const fetchAuthor= async () => {
       if(!blog) return 
@@ -68,16 +86,16 @@ const Blog = ({ blogId }) => {
       }
     };
     
-    const SaveBlogs = async (blogId) => {
-      try {
-        await axios.put(`http://localhost:5000/api/user/${user._id}/saveBlogs`,
-          { blogId },
-          { headers: { "Content-Type": "application/json" } }
-        );
-      } catch (error) {
-        console.error("Error saving blog:", error);
-      }
-    };
+    // const SaveBlogs = async (blogId) => {
+    //   try {
+    //     await axios.put(`http://localhost:5000/api/user/${user._id}/saveBlogs`,
+    //       { blogId },
+    //       { headers: { "Content-Type": "application/json" } }
+    //     );
+    //   } catch (error) {
+    //     console.error("Error saving blog:", error);
+    //   }
+    // };
     
 
   useEffect(() => {
@@ -98,44 +116,28 @@ const Blog = ({ blogId }) => {
   
 
   return (
-    <div className="blog-post" onClick={() => navigate(`/blog/${blog?._id}`)}>
+    <div className="blog-post" >
       <div className="author-info">
-        <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={blog?.author} style={{ width: '20px', height: '20px', borderRadius: '50%', border:'black' }} />
+        <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={blog?.author} style={{ width: '20px', height: '20px', borderRadius: '50%', border:'black' }} onClick={()=>{if(author._id===user.id){navigate(`/user-profile`)}
+        else if(blog?.author_name!=='Anonymous') {navigate(`/account/${author?._id}`)}} }
+        
+        />
         <div className="author-details">
           <h3 className="author-name">{blog?.author_name}</h3>
           <p className="author-role">{blog?.role}</p>
+          <div className="post-time">{blog?.CreatedAt}</div>
         </div>
-        <div className="post-time">{blog?.CreatedAt}</div>
+        
       </div>
       
       <h2 className="blog-title">{blog?.title}</h2>
-      <div  className="blog-content">
+      <div  className="blog-content" onClick={() => navigate(`/blog/${blog?._id}`)}>
       <ReactMarkdown rehypePlugins={[rehypeRaw]}>{ extractFirstHtmlElement(blog?.content) }</ReactMarkdown>
       </div>
       
       <div className="blog-footer">
         <div className="vote-section">
-          <button 
-            className="vote-button"
-            onClick={(e) => {
-              Vote(blog?._id, "upvote");
-              e.stopPropagation();
-            }}
-          >
-            ↑
-          </button>
-          <span className="vote-count">
-            {(blog?.Upvote || 0) - (blog?.DownVote || 0)}
-          </span>
-          <button 
-            className="vote-button"
-            onClick={(e) => {
-              Vote(blog?._id, "downvote");
-              e.stopPropagation();
-            }}
-          >
-            ↓
-          </button>
+          <VoteComponent blogId={blogId}/>
         </div>
         <span className="blog-stats">
           <span>💬</span>
@@ -146,16 +148,6 @@ const Blog = ({ blogId }) => {
             <span key={index} className="tag">{tag}</span>
           ))}
         </div> */}
-        <button 
-          className={`save-button ${blog?.isSaved ? 'saved' : ''}`}
-          onClick={(e) => {
-            SaveBlogs(blog?._id);
-            e.stopPropagation();
-            
-          }}
-        >
-          <FiBookmark />
-        </button>
       </div>
     </div>
   );

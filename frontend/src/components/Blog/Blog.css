@@ -32,8 +32,11 @@
     
 }
 .author-details {
-    width: 65px;
+    min-width: 150px;
     line-height: 5.5px;
+    display: flex;
+    flex-direction: row;
+    row-gap: 15px;
 }       
 
 .author-name {

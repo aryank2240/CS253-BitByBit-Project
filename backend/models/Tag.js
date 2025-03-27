@@ -13,6 +13,8 @@ const tagSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Blog'
     }]
+
+    
 });
 
 export default mongoose.model('Tag',tagSchema);

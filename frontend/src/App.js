@@ -25,7 +25,7 @@ function App() {
         <Route path="/signup" element={<SignUpCard />} />
         <Route path="/otp" element={<EmailVerification />} />
         <Route path="/write" element={<BlogWritingPage />} />
-        <Route path="/account/:id" element={<AccountProfilePage  />} />
+        <Route path="/account/:id" element={<AccountProfilePage />} />
         <Route path="*" element={<h1><Error404 /></h1>} />
       </Routes>
     </Router>

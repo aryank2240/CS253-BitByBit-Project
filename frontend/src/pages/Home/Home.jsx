@@ -88,12 +88,13 @@ const Home = () => {
   useEffect(() => {
     const fetchSavedBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user._id}/SavedBlogs`);
+        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/SavedBlogs`);
         setSavedBlogs(response.data);
       } catch (error) {
         console.error("Error fetching saved blogs:", error);
       }
     };
+    fetchSavedBlog();
   }, [user]);
 
   
@@ -102,7 +103,7 @@ const Home = () => {
     try {
       const save = async () => {
         try {
-          const response = await axios.put(`http://localhost:5000/api/user/${user._id}/saveBlogs`,
+          const response = await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
             { blogId }
             , { headers: { "Content-Type": "application/json" } }
           );
@@ -151,12 +152,13 @@ const Home = () => {
   useEffect(() => {
     const fetchFollowedBlogs = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user._id}/followedBlogs`);
+        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/followedBlogs`);
         setFollowedBlogs(response.data);
       } catch (error) {
         console.error("Error fetching followed blogs:", error);
       }
     };
+    fetchFollowedBlogs();
   }, [user]);
 
 

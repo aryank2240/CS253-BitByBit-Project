@@ -26,7 +26,7 @@ async function createUser(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    
+
     const newUser = new User({
       name,
       email,
@@ -154,7 +154,7 @@ async function SaveBlogs(req, res) {
 
     const user = await User.findOne({ _id: id });
     if (!user) return res.status(404).json({ error: "User not found" });
-    const blog_id = req.body.blog_id;
+    const blog_id = req.body.blogId;
     user.SavedBlogs.push(blog_id);
     await user.save();
     res.json(user);
@@ -199,5 +199,63 @@ async function getSavedBlogs(req , res){
   }
 }
 
+async function followUsers(req, res) {
+  try {
+    const { id } = req.params; // ID of the current user
+    const { accountId } = req.body; // ID of the account to follow/unfollow
 
-export { createUser, getUser, deleteUser, updateUser, loginUser, SaveBlogs, getBlogsbyFollowedUsers , getSavedBlogs, getBlogsbyUser}
+    // Validate IDs
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(accountId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    // Find both users
+    const [currentUser, targetUser] = await Promise.all([
+      User.findById(id),
+      User.findById(accountId)
+    ]);
+
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if already following
+    const isFollowing = currentUser.following.includes(accountId);
+    
+    if (isFollowing) {
+      // Unfollow logic
+      currentUser.following.pull(accountId);
+      targetUser.followers.pull(id);
+      currentUser.followingCount = Math.max(0, currentUser.followingCount - 1);
+      targetUser.followersCount = Math.max(0, targetUser.followersCount - 1);
+    } else {
+      // Follow logic
+      currentUser.following.addToSet(accountId); // Prevent duplicates
+      targetUser.followers.addToSet(id);
+      currentUser.followingCount += 1;
+      targetUser.followersCount += 1;
+    }
+
+    // Save both users
+    const [updatedCurrentUser, updatedTargetUser] = await Promise.all([
+      currentUser.save(),
+      targetUser.save()
+    ]);
+
+    res.status(200).json({
+      message: isFollowing ? "Unfollowed successfully" : "Followed successfully",
+      following: !isFollowing,
+      followingCount: updatedCurrentUser.followingCount,
+      followersCount: updatedTargetUser.followersCount
+    });
+
+  } catch (err) {
+    console.error("Error in followUsers:", err);
+    res.status(500).json({ 
+      error: "Internal Server Error",
+      message: err.message 
+    });
+  }
+}
+
+export { createUser, getUser, deleteUser, updateUser, loginUser, SaveBlogs, getBlogsbyFollowedUsers , getSavedBlogs, getBlogsbyUser, followUsers}

@@ -1,10 +1,13 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import res from "express/lib/response.js";
 
 // Middleware to protect routes (authentication required)
 export const protect = async (req, res, next) => {
   let token;
-
+  if (!token) {
+    return res.status(401).json({ message: 'Not authorized, no token' });
+}
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
