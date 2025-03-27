@@ -234,7 +234,7 @@ return (
 
           <div className="single-blog-post-actions">
             <div className="single-blog-vote-section">
-              <VoteComponent blogId={blogId} />
+              <VoteComponent blogId={blogId} userId={user?.id} />
             </div>
 
             <div className="single-blog-comments-count">

@@ -1,51 +1,86 @@
+/* Vote.css */
 .vote-container {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* space between buttons and count */
+  font-family: Arial, sans-serif;
+  margin-top:7px;
+  margin-right:5px;
+
+}
+
+.vote-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.vote-button:hover {
+  transform: scale(1.1);
+}
+
+.vote-button:focus {
+  outline: none;
+}
+
+.vote-button svg {
+  width: 24px;
+  height: 24px;
+  fill: #888; /* default neutral gray */
+}
+
+.upvote-button.active svg {
+  fill: #FF4500; /* Reddit upvote orange */
+}
+
+.downvote-button.active svg {
+  fill: #7193FF; /* Reddit downvote blue */
+}
+
+.vote-count {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 8px; /* space on both sides of the count */
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+  .vote-container {
+    gap: 4px;
   }
-  
-  .vote-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    padding: 4px 8px;
-    transition: all 0.2s ease;
+  .vote-button svg {
+    width: 20px;
+    height: 20px;
   }
-  
-  .arrow-up, .arrow-down {
-    font-size: 18px;
-  }
-  
-  /* Default state */
-  .upvote-button, .downvote-button {
-    color: #888;
-  }
-  
-  /* Hover states */
-  .upvote-button:hover {
-    color: #ff8c00; /* Light orange on hover */
-  }
-  
-  .downvote-button:hover {
-    color: #9370db; /* Light violet on hover */
-  }
-  
-  /* Active states - matching the image */
-  .upvoted {
-    color: #ff6600 !important; /* Orange color for upvoted state */
-  }
-  
-  .downvoted {
-    color: #8a2be2 !important; /* Violet color for downvoted state */
-  }
-  
   .vote-count {
-    font-weight: bold;
     font-size: 14px;
-    color: #333;
+    margin: 0 4px;
   }
-  
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .vote-container {
+    color: #ccc;
+  }
+  .vote-count {
+    color: #ccc;
+  }
+  .vote-button svg {
+    fill: #aaa;
+  }
+  .upvote-button.active svg {
+    fill: #FF7A45; /* slightly lighter orange for dark mode */
+  }
+  .downvote-button.active svg {
+    fill: #0f5090; /* subtler blue for dark mode */
+  }
+}

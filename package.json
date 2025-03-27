@@ -2,6 +2,7 @@
   "dependencies": {
     "crypto": "^1.0.1",
     "git": "^0.1.5",
+    "mime": "^4.0.6",
     "nodemailer": "^6.10.0",
     "speakeasy": "^2.0.0"
   }

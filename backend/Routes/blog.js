@@ -1,6 +1,8 @@
 import express from 'express'
 const router = express.Router({ mergeParams: true });
-import { createBlog, getBlog, deleteBlog, updateBlog, addCommentOrTags,getTopBlogs, getReportedBlogs, getCommentsForBlog,getTagForBlog } from '../controllers/blog.js';
+import { createBlog, getBlog, deleteBlog, updateBlog, addCommentOrTags,getTopBlogs, getReportedBlogs, getCommentsForBlog,getTagForBlog ,
+  upvoteBlog,downvoteBlog,
+} from '../controllers/blog.js';
 
 router.post("/post", async (req, res) => {
   createBlog(req, res);
@@ -24,8 +26,12 @@ router.get("/:id", async (req, res) => {
   getBlog(req, res);
 });
 
-
-
+router.patch("/:id/upvote", async (req, res) => {
+  upvoteBlog(req, res);
+});
+router.patch("/:id/downvote", async (req, res) => {
+  downvoteBlog(req, res);
+});
 router.delete("/:id", async (req, res) => {
   deleteBlog(req, res);
 }

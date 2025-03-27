@@ -56,7 +56,15 @@ const blogSchema=new mongoose.Schema({
     SavedBy:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'
-    }]
+    }],
+    upvoters: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }],
+      downvoters: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }]
 });
 
 export default mongoose.model('Blog',blogSchema);

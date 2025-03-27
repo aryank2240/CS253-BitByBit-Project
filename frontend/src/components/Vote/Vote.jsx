@@ -1,75 +1,82 @@
 import React, { useState, useEffect } from "react";
 import "./Vote.css";
 import axios from "axios";
-import { BiUpvote , BiDownvote } from "react-icons/bi";
-function VoteComponent({ blogId }) {
-    const [voteStatus, setVoteStatus] = useState(null); // "upvoted", "downvoted", or null
-    const [voteCount, setVoteCount] = useState(0);
+import { BiUpvote, BiDownvote } from "react-icons/bi";
 
-    // Fetch initial vote count
+function VoteComponent({ blogId, userId }) {
+    const [voteStatus, setVoteStatus] = useState(null); // null, "upvoted", or "downvoted"
+    const [upvotes, setUpvotes] = useState(0);
+    const [downvotes, setDownvotes] = useState(0);
+ 
+
+    // Fetch initial vote status and counts
     useEffect(() => {
-        const fetchBlog = async () => {
+        const fetchVoteData = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`);
-                setVoteCount(response?.data?.Upvote || 0);
+                const blog = response?.data;
+                
+                setUpvotes(blog?.Upvote);
+                setDownvotes(blog?.Downvote);
+                
+                if (userId) {
+                    const isUpvoted = blog.upvoters?.includes(userId);
+                    const isDownvoted = blog.downvoters?.includes(userId);
+                    setVoteStatus(isUpvoted ? "upvoted" : isDownvoted ? "downvoted" : null);
+                }
             } catch (error) {
-                console.error("Error fetching blog:", error);
+                console.error("Error fetching vote data:", error);
             }
         };
-        fetchBlog();
-    }, [blogId]);
+        fetchVoteData();
+    }, [blogId, userId]);
 
-    // Function to update vote count in backend
-    const updateVote = async (newVoteCount) => {
+    const handleVote = async (voteType) => {
+        if (!userId) {
+            return;
+        }
+
         try {
-            await axios.patch(`http://localhost:5000/api/blog/${blogId}`, {
-                Upvote: newVoteCount,
+            const endpoint = `http://localhost:5000/api/blog/${blogId}/${voteType}`;
+            const response = await axios.patch(endpoint, {userId}, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
+
+            const updatedBlog = response?.data?.blog;
+            setUpvotes(updatedBlog?.Upvote);
+            setDownvotes(updatedBlog?.Downvote);
+
+            // Update vote status
+            const isUpvoted = updatedBlog?.upvoters?.includes(userId);
+            const isDownvoted = updatedBlog?.downvoters?.includes(userId);
+            if(isUpvoted){
+                setVoteStatus("upvoted")
+            }
+            else{
+                setVoteStatus("downvoted")
+            }
+
         } catch (error) {
-            console.error("Error updating vote:", error);
+            console.error("Error updating vote:", error.response?.data?.message || error?.message);
         }
-    };
-
-    const handleUpvote = () => {
-        let newVoteCount;
-        if (voteStatus === "upvoted") {
-            setVoteStatus(null);
-            newVoteCount = voteCount - 1;
-        } else {
-            newVoteCount = voteStatus === "downvoted" ? voteCount + 2 : voteCount + 1;
-            setVoteStatus("upvoted");
-        }
-        setVoteCount(newVoteCount);
-        updateVote(newVoteCount); // Send update to backend
-    };
-
-    const handleDownvote = () => {
-        let newVoteCount;
-        if (voteStatus === "downvoted") {
-            setVoteStatus(null);
-            newVoteCount = voteCount + 1;
-        } else {
-            newVoteCount = voteStatus === "upvoted" ? voteCount - 2 : voteCount - 1;
-            setVoteStatus("downvoted");
-        }
-        setVoteCount(newVoteCount);
-        updateVote(newVoteCount); // Send update to backend
     };
 
     return (
         <div className="vote-container">
             <button
-                className={`vote-button upvote-button ${voteStatus === "upvoted" ? "upvoted" : ""}`}
-                onClick={handleUpvote}
+                className={`vote-button upvote-button ${voteStatus === "upvoted" ? "active" : ""}`}
+                onClick={() => handleVote("upvote")}
             >
-                <span className="arrow-up"><BiUpvote /></span>
+                <BiUpvote />
+                <span className="count">{upvotes}</span>
             </button>
-            <span className="vote-count">{voteCount}</span>
+            
             <button
-                className={`vote-button downvote-button ${voteStatus === "downvoted" ? "downvoted" : ""}`}
-                onClick={handleDownvote}
+                className={`vote-button downvote-button ${voteStatus === "downvoted" ? "active" : ""}`}
+                onClick={() => handleVote("downvote")}
             >
-                <span className="arrow-down"><BiDownvote /></span>
+                <BiDownvote />
+                <span className="count">{downvotes}</span>
             </button>
         </div>
     );

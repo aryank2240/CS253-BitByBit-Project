@@ -1,9 +1,10 @@
 import Blog from './../models/Blog.js'
+
 import User from './../models/User.js'
 import Tag from './../models/Tag.js'
 import Comment from './../models/Comment.js'
 import mongoose from 'mongoose';
-import { get } from 'http';
+
 
 async function createBlog(req , res){
     try {
@@ -16,6 +17,7 @@ async function createBlog(req , res){
         await blog.save();
         user.Blogs.push(blog._id);
         await user.save();
+
         res.json(blog);
     
     console.log(blog);
@@ -154,6 +156,8 @@ async function addCommentOrTags(req, res) {
   } catch (err) {
     console.error("Error in addCommentOrTags:", err);
     res.status(500).json({ error: "Internal Server Error" });
+
+
   }
 }
 
@@ -169,7 +173,7 @@ async function getReportedBlogs(req,res){
   }
 }
 
-const getCommentsForBlog = async (req,res) => {
+async function getCommentsForBlog(req,res)  {
   try {
     const id=req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -181,7 +185,7 @@ const getCommentsForBlog = async (req,res) => {
   } catch (error) {
     console.error("Error fetching comments:", error);
   }
-};
+}
 
 const getTagForBlog = async (req,res) => {
   try {
@@ -203,5 +207,112 @@ const getTagForBlog = async (req,res) => {
 };
 
 
+// Upvote controller function
+const upvoteBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blogId=id;
+    const userId = req.body.userId;
 
-export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags, getReportedBlogs, getCommentsForBlog, getTagForBlog}
+    // Find the blog document with the given blogId
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Check if the user already upvoted or downvoted
+    const alreadyUpvoted = blog.upvoters.includes(userId);
+    const alreadyDownvoted = blog.downvoters.includes(userId);
+
+    if (alreadyUpvoted) {
+      // If user has already upvoted, remove the upvote
+      blog.upvoters.pull(userId);
+    } else {
+      // Otherwise, add the upvote
+      blog.upvoters.push(userId);
+      // If the user had downvoted previously, remove that vote
+      if (alreadyDownvoted) {
+        blog.downvoters.pull(userId);
+      }
+    }
+    
+    // Update count fields based on the lengths of the arrays
+    blog.Upvote = blog.upvoters.length;
+    blog.Downvote = blog.downvoters.length;
+    blog.UpdatedAt = new Date();
+
+    await blog.save();
+
+    // Optionally update user's likedBlogs if you want to track blogs the user liked
+    const user = await User.findById(userId);
+    if (user) {
+      if (!alreadyUpvoted) {
+        // Avoid duplicating blog id in likedBlogs
+        if (!user.likedBlogs.includes(blogId)) {
+          user.likedBlogs.push(blogId);
+        }
+      } else {
+        user.likedBlogs.pull(blogId);
+      }
+      await user.save();
+    }
+
+    res.json({ message: "Upvote updated successfully", blog });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating upvote", error: error.message });
+  }
+};
+
+// Downvote controller function
+ const downvoteBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blogId= id;
+    const userId = req.body.userId;
+
+    // Find the blog document
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Check if the user has already voted
+    const alreadyDownvoted = blog.downvoters.includes(userId);
+    const alreadyUpvoted = blog.upvoters.includes(userId);
+
+    if (alreadyDownvoted) {
+      // If user has already downvoted, remove the downvote
+      blog.downvoters.pull(userId);
+    } else {
+      // Otherwise, add the downvote
+      blog.downvoters.push(userId);
+      // Remove an upvote if the user had upvoted before
+      if (alreadyUpvoted) {
+        blog.upvoters.pull(userId);
+      }
+    }
+    
+    // Update count fields accordingly
+    blog.Upvote = blog.upvoters.length;
+    blog.Downvote = blog.downvoters.length;
+    blog.UpdatedAt = new Date();
+
+    await blog.save();
+
+    // If user had previously liked this blog, remove it from likedBlogs
+    const user = await User.findById(userId);
+    if (user && alreadyUpvoted) {
+      user.likedBlogs.pull(blogId);
+      await user.save();
+    }
+
+    res.json({ message: "Downvote updated successfully", blog });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating downvote", error: error.message });
+  }
+};
+
+
+export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags, getReportedBlogs, getCommentsForBlog, getTagForBlog
+  , upvoteBlog, downvoteBlog
+}

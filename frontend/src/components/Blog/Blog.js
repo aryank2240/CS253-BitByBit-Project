@@ -137,7 +137,7 @@ const Blog = ({ blogId }) => {
       
       <div className="blog-footer">
         <div className="vote-section">
-          <VoteComponent blogId={blogId}/>
+          <VoteComponent blogId={blogId} userId={user?.id}/>
         </div>
         <span className="blog-stats">
           <span>💬</span>
