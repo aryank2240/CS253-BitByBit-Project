@@ -8,7 +8,6 @@ import { get } from 'http';
 async function createBlog(req , res){
     try {
         const newBlog = req.body;
-    
         const user = await User.findOne({ _id: newBlog.author });
         if (!user) return res.status(404).json({ error: "User not found" });
         console.log(user);
@@ -20,11 +19,6 @@ async function createBlog(req , res){
         res.json(blog);
     
     console.log(blog);
-
-
-    
-
-
       }
       catch (err) {
     
@@ -197,7 +191,9 @@ const getTagForBlog = async (req,res) => {
     }
     const tags = await Tag.find({ blogs: id }); // Find all comments linked to blogId
     if (tags.length === 0) {
+      console.error("No tags for this blog");
       return res.status(404).json({ message: "No tags for this blog" });
+     
     }
     res.json(tags); // Send tags as response
   } catch (error) {
@@ -205,6 +201,7 @@ const getTagForBlog = async (req,res) => {
     res.status(500).json({ message: "Internal server error",error });
   }
 };
+
 
 
 export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags, getReportedBlogs, getCommentsForBlog, getTagForBlog}

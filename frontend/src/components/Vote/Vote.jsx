@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Vote.css";
 import axios from "axios";
-
+import { BiUpvote , BiDownvote } from "react-icons/bi";
 function VoteComponent({ blogId }) {
     const [voteStatus, setVoteStatus] = useState(null); // "upvoted", "downvoted", or null
     const [voteCount, setVoteCount] = useState(0);
@@ -62,14 +62,14 @@ function VoteComponent({ blogId }) {
                 className={`vote-button upvote-button ${voteStatus === "upvoted" ? "upvoted" : ""}`}
                 onClick={handleUpvote}
             >
-                <span className="arrow-up">↑</span>
+                <span className="arrow-up"><BiUpvote /></span>
             </button>
             <span className="vote-count">{voteCount}</span>
             <button
                 className={`vote-button downvote-button ${voteStatus === "downvoted" ? "downvoted" : ""}`}
                 onClick={handleDownvote}
             >
-                <span className="arrow-down">↓</span>
+                <span className="arrow-down"><BiDownvote /></span>
             </button>
         </div>
     );

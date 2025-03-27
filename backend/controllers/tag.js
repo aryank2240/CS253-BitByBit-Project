@@ -4,34 +4,44 @@ import mongoose from 'mongoose'
 
 async function postTag(req, res) {
   try {
-    const { name, count, blogs } = req.body; // Destructure correctly
+    const { name, blogs } = req.body;
 
-    // Validate required fields
-    if (!name || !count || !blogs) {
+ 
+    if (!name || !blogs) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Check if the blog exists
-    const blog = await Blog.findOne({ _id: blogs }); 
+    
+    const blog = await Blog.findOne({ _id: blogs });
     if (!blog) return res.status(404).json({ error: "Blog not found" });
 
-    // Create new tag with all required fields
-    const newTag = new Tag({ name, count, blogs });
-    await newTag.save();
+    let tag = await Tag.findOne({ name });
 
-    // Add tag reference to blog
-    blog.tags = blog.tags || []; // Ensure `tags` is an array
-    blog.tags.push(newTag._id);
-    await blog.save();
+    if (tag) {
+      
+      tag.count += 1;
+      await tag.save();
+    } else {
+      // If the tag does not exist, create a new one
+      tag = new Tag({ name, count: 1, blogs });
+      await tag.save();
+    }
 
-    // Send response with the newly created tag
-    res.json(newTag);
-  }
-  catch (err) {
+    blog.tags = blog.tags || []; 
+    if (!blog.tags.includes(tag._id)) {
+      blog.tags.push(tag._id);
+      await blog.save();
+    }
+
+    // Send response with the updated/created tag
+    res.json(tag);
+  } catch (err) {
+    
     console.error(err);
     res.status(500).json({ error: err.message });
   }
 }
+
 
 
 async function getTag(req, res) {

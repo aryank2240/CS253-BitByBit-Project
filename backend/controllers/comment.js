@@ -1,6 +1,7 @@
 import Blog from './../models/Blog.js'
 import Comment from './../models/Comment.js'
 import mongoose from 'mongoose';
+import User from './../models/User.js'
 
 async function postComment(req, res) {
     try {
@@ -10,12 +11,16 @@ async function postComment(req, res) {
         })
     
         if (!blog) { return res.status(404).json({ error: "Blog not found" }) }
-    
+        const user = await User.findOne({
+          _id:newComment.UserId
+        })
         
-    
+        if (!user) { return res.status(404).json({ error: "User not found" }) }
+        
         const comment = new Comment(newComment);
         await comment.save()
-    
+        user.comments.push(comment._id);
+        await user.save();
         blog.comments.push(comment._id);
         await blog.save();
         res.json(newComment);

@@ -129,11 +129,26 @@ const UserSchema = new mongoose.Schema({
   followingCount:{
       type:Number,
       default:0
+
   },
   blogCount:{
+
       type:Number,
       default:0
-  }
+  },
+  likedBlogs:[
+    {
+       type:mongoose.Schema.Types.ObjectId,
+        ref:'Blog'
+    }
+  ],
+  comments:[
+    {
+      type:mongoose.Schema.Types.ObjectId,
+        ref:'Comment'
+    }
+  ]
+
 });
 
 export default mongoose.model('User',UserSchema);

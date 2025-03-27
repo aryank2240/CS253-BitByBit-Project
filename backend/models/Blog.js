@@ -53,6 +53,10 @@ const blogSchema=new mongoose.Schema({
         type:String,
         default:""
     },
+    SavedBy:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
+    }]
 });
 
 export default mongoose.model('Blog',blogSchema);

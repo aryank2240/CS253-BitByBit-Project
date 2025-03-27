@@ -59,31 +59,6 @@ const Home = () => {
 
 
 
-  const Vote = ({ blogId, choice }) => {
-    try {
-      if (choice == "upvote") {
-        const upvote = async () => {
-          try {
-            const response = await axios.put(`http://localhost:5000/api/blog/upvote/${blogId}`);
-          } catch (error) {
-            console.error("Error upvoting blog:", error);
-          }
-        }
-      }
-      else {
-        const downvote = async () => {
-          try {
-            const response = await axios.put(`http://localhost:5000/api/blog/downvote/${blogId}`);
-          } catch (error) {
-            console.error("Error downvoting blog:", error);
-          }
-        }
-      }
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
 
   useEffect(() => {
     const fetchSavedBlog = async () => {
@@ -193,6 +168,7 @@ const Home = () => {
 
   return (
     // <div className='wrap'>
+    
     <div className="home-container">
       {/* Header Section */}
       <header className="header-content">

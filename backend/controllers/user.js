@@ -155,6 +155,10 @@ async function SaveBlogs(req, res) {
     const user = await User.findOne({ _id: id });
     if (!user) return res.status(404).json({ error: "User not found" });
     const blog_id = req.body.blogId;
+    const blog = await Blog.findOne({_id:blog_id})
+    if(!blog) return res.status(404).json({ error: "Blog not found" });
+    blog.SavedBy.push(user._id)
+    await blog.save();
     user.SavedBlogs.push(blog_id);
     await user.save();
     res.json(user);

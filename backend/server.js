@@ -26,9 +26,6 @@ app.use('/api/auth',auth);
 
 
 
-
-
-
 app.get("/", (req, res) => {
   res.json({ message: "hello there, this is backend!" });
 });
