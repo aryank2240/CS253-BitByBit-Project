@@ -29,8 +29,12 @@ const AccountProfilePage = () => {
     try {
       const res = await axios.put(
         `http://localhost:5000/api/user/${user?.id}/follow`,
-        { accountId },
-        { headers: { "Content-Type": "application/json" } }
+        { accountId }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        }
       );
       if (res.status === 200) {
         // Update isFollowing using the backend response
@@ -78,8 +82,12 @@ const AccountProfilePage = () => {
     const getAccount = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/${accountId}`,
-          { headers: { "Content-Type": "application/json" } }
+          `http://localhost:5000/api/user/${accountId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }
         );
         setAccount(res?.data);
         if (!name) {
@@ -101,7 +109,12 @@ const AccountProfilePage = () => {
       if (!account) return;
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/${accountId}/blogs`
+          `http://localhost:5000/api/user/${accountId}/blogs`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }
         );
         setUserBlogs(res.data);
       } catch (error) {

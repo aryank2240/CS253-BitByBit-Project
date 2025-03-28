@@ -63,7 +63,12 @@ const Home = () => {
   useEffect(() => {
     const fetchSavedBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/SavedBlogs`);
+        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/SavedBlogs`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        });
         setSavedBlogs(response.data);
       } catch (error) {
         console.error("Error fetching saved blogs:", error);
@@ -80,7 +85,12 @@ const Home = () => {
         try {
           const response = await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
             { blogId }
-            , { headers: { "Content-Type": "application/json" } }
+            , {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+              }
+            }
           );
         } catch (error) {
           console.error("Error saving blog:", error);
@@ -127,7 +137,12 @@ const Home = () => {
   useEffect(() => {
     const fetchFollowedBlogs = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/followedBlogs`);
+        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/followedBlogs`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        });
         setFollowedBlogs(response.data);
       } catch (error) {
         console.error("Error fetching followed blogs:", error);

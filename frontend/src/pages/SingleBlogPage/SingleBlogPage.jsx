@@ -32,8 +32,12 @@ const SingleBlogPage = () => {
     const fetchAuthor = async () => {
       if (!blog) return
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${blog?.author}`,
-          { headers: { "Content-Type": "application/json" } }
+        const response = await axios.get(`http://localhost:5000/api/user/${blog?.author}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        }
         );
         console.log(response.data);
         setAuthor(response.data);
@@ -52,7 +56,12 @@ const SingleBlogPage = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/blog/comments/${blogId}`);
+        const response = await axios.get(`http://localhost:5000/api/blog/comments/${blogId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        });
         setComments(response?.data);
       } catch (error) {
         if (error.response && error.response.status === 400) {
@@ -69,7 +78,12 @@ const SingleBlogPage = () => {
 
     const fetchTags = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/blog/tag/${blogId}`);
+        const response = await axios.get(`http://localhost:5000/api/blog/tag/${blogId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        });
         setTags(response?.data);
       } catch (error) {
         if (error.response && error.response.status === 400) {
@@ -118,7 +132,12 @@ const SingleBlogPage = () => {
    
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`);
+        const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        });
         if (response.status === 400) {
           navigate("/404");
         }
@@ -152,9 +171,12 @@ const SingleBlogPage = () => {
         content,
         ParentBlogId,
         UserId
-  }, {
-      headers: { "Content-Type": "application/json" },
-    });
+  },  {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+    }
+  });
     console.log(res.data);
     // Optionally, clear the comment input
     setComment("");
@@ -167,8 +189,12 @@ const SaveBlogs = async () => {
   if(isSaved){return;}
       try {
         await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
-          { blogId },
-          { headers: { "Content-Type": "application/json" } }
+          { blogId }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }
         );
         setIsSaved(true);
       } catch (error) {

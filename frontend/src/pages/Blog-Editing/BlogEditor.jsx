@@ -51,7 +51,10 @@ const BlogEditor = () => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`, {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
         });
 
         setBlog(response.data);
@@ -137,9 +140,11 @@ const BlogEditor = () => {
           author_name,
           content,
           title,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
         }
       );
 

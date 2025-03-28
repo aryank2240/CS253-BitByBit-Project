@@ -136,12 +136,18 @@ const Admin = () => {
     useEffect(() => {
         const fetchFollowedBlogs = async () => {
           try {
-            const response = await axios.get(`http://localhost:5000/api/user/${user._id}/followedBlogs`);
+            const response = await axios.get(`http://localhost:5000/api/user/${user._id}/followedBlogs`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+              }
+            });
             setFollowedBlogs(response.data);
           } catch (error) {
             console.error("Error fetching followed blogs:", error);
           }
         };
+        fetchFollowedBlogs();
       }, [user]);
     
 
