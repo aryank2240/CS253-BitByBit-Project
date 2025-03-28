@@ -173,17 +173,26 @@ async function getReportedBlogs(req,res){
   }
 }
 
-async function getCommentsForBlog(req,res)  {
+async function getCommentsForBlog(req, res) {
   try {
-    const id=req.params;
+    const id = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid blog ID" });
     }
-    const comments = await Comment.find({ blog: id }); // Find all comments linked to blogId
-    if(!comments) res.status(404).json({message:"No comments for this blog"})
-    console.log(comments);
+    
+    // Fix: Use ParentBlogId instead of blog, and populate the UserId to get user details
+    const comments = await Comment.find({ ParentBlogId: id }).populate('UserId', 'name');
+    
+    if (!comments || comments.length === 0) {
+      return res.status(404).json({ message: "No comments for this blog" });
+    }
+    
+    // Return the comments as JSON response
+    res.json(comments);
   } catch (error) {
     console.error("Error fetching comments:", error);
+    // Add proper error response
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
