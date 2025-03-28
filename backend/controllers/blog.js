@@ -352,6 +352,7 @@ const upvoteBlog = async (req, res) => {
 };
 
 
-export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags, getReportedBlogs, getCommentsForBlog, getTagForBlog
-  , upvoteBlog, downvoteBlog
+export {
+  createBlog, getTopBlogs, getBlog, deleteBlog, updateBlog, addCommentOrTags, 
+  getReportedBlogs, getCommentsForBlog, getTagForBlog, upvoteBlog, downvoteBlog, searchBlogs
 }
