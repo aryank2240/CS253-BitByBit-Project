@@ -25,8 +25,12 @@ const SignUpCard = () => {
             if (password===confirmPassword){
             const response = await axios.post(
                 "http://localhost:5000/api/auth/register",
-                { name, email, password,  role: "user"},
-                { headers: { "Content-Type": "application/json" } }
+                { name, email, password,  role: "user"}, {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                  }
+                }
             );
 
             setSuccess(response.data.message);

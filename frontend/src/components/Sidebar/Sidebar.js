@@ -25,8 +25,12 @@ const Sidebar = () => {
    useEffect(() => {
      const getPopularTag = async () => {
        try {
-         const response = await axios.get('http://localhost:5000/api/tag/popular',
-          { headers: { "Content-Type": "application/json" } }
+         const response = await axios.get('http://localhost:5000/api/tag/popular', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        }
          );
          console.log(response.data);
          setPopularTags(response.data);

@@ -17,12 +17,13 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "http://localhost:3002" })); 
+app.use(cors({ origin: "http://localhost:3000" })); 
 app.use('/api/blog', blog);
 app.use('/api/user', user);
 app.use('/api/tag', tag);
 app.use('/api/comment', comment);
 app.use('/api/auth',auth);
+
 
 
 

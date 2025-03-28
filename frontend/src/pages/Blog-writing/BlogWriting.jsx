@@ -54,7 +54,12 @@ const BlogWritingPage = () => {
             if (!Array.isArray(tags) || tags.length === 0) return;
     
             const promises = tags.map((name) =>
-                axios.post(`http://localhost:5000/api/tag/post`, { name , count, blogs })
+                axios.post(`http://localhost:5000/api/tag/post`, { name , count, blogs }, {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                  }
+                })
             );
     
             await Promise.all(promises);
@@ -134,8 +139,11 @@ const BlogWritingPage = () => {
                 author_name,
                 content,
                 title,
-            }, {
-                headers: { "Content-Type": "application/json" }
+            },  {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+              }
             });
     
             if (res?.data?._id) {

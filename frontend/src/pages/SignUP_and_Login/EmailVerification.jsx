@@ -16,7 +16,12 @@ const EmailVerification = () => {
     setError('');
     if(!userId) return
     try {
-      const response = await axios.post('/api/auth/verify-email', { userId, otp });
+      const response = await axios.post('/api/auth/verify-email', { userId, otp }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+        }
+      });
       
       if (response.status === 200) {
         // Redirect to login page after successful verification

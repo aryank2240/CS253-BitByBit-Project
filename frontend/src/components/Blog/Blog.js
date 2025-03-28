@@ -24,6 +24,11 @@ const Blog = ({ blogId }) => {
     try {
         const response = await axios.put(`http://localhost:5000/api/user/${user?.id}/saveBlogs`, {
             blogId:blogId,
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
         });
         console.log("Blog saved to user successfully:", response.data);
         setIsSaved(true) ; // Return updated user data
@@ -36,8 +41,12 @@ const Blog = ({ blogId }) => {
     const fetchAuthor= async () => {
       if(!blog) return 
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${blog?.author}`,
-          { headers: { "Content-Type": "application/json" } }
+        const response = await axios.get(`http://localhost:5000/api/user/${blog?.author}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        }
         );
         console.log(response.data);
         setAuthor(response.data);
@@ -74,17 +83,7 @@ const Blog = ({ blogId }) => {
       }
     }, [navigate]); 
 
-    const Vote = async (blogId, choice) => {
-      try {
-        if (choice === "upvote") {
-          await axios.put(`http://localhost:5000/api/blog/upvote/${blogId}`);
-        } else {
-          await axios.put(`http://localhost:5000/api/blog/downvote/${blogId}`);
-        }
-      } catch (error) {
-        console.error("Error voting blog:", error);
-      }
-    };
+  
     
     // const SaveBlogs = async (blogId) => {
     //   try {
@@ -102,7 +101,12 @@ const Blog = ({ blogId }) => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`,
-          { headers: { "Content-Type": "application/json" } }
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          }
         );
         console.log(response.data);
         setBlog(response.data);

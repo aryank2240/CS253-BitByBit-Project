@@ -21,7 +21,12 @@ const OwnProfilePage = () => {
       if(!user) return
       const getAccount= async ()=>{
           try{
-              const res = await axios.get(`http://localhost:5000/api/user/${user?.id}`);
+              const res = await axios.get(`http://localhost:5000/api/user/${user?.id}`, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+              });
               setAccount(res.data);
               if (name == '') {
                   setName(res.data?.name);// Ensure this contains the expected fields
@@ -72,9 +77,11 @@ const OwnProfilePage = () => {
       const res = axios.patch(`http://localhost:5000/api/user/${user.id}`,
         {
           name
-        },
-        {
-          headers: { "Content-Type": "application/json" }
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
         })
     }
     catch (e) {
@@ -90,7 +97,12 @@ const OwnProfilePage = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/${user.id}/blogs`);
+          `http://localhost:5000/api/user/${user.id}/blogs`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            }
+          });
         console.log(user.followersCount);
         setUserBlogs(res.data);
       } catch (error) {
