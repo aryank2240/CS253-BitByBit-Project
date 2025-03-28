@@ -47,6 +47,15 @@ Run the server:
 cd backend
 npm start
 ```
+Create the .env files for configurations.
+```bash
+touch .env
+```
+Put these values in the .env file for the configuration.
+```bash
+MONGO_URL , SMTP_HOST ,SMTP_PORT , SMTP_SECURE, EMAIL_USERNAME, EMAIL_PASSWORD, JWT_SECRET
+```
+Run the web-application:
 ```bash
 cd ../frontend
 npm start
