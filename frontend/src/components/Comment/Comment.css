@@ -1,0 +1,136 @@
+.comment-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.comment-container:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.comment-user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.comment-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 1px solid #eee;
+}
+
+.comment-username {
+  font-weight: 500;
+  color: #333;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: #777;
+}
+
+.comment-content {
+  margin-bottom: 10px;
+  line-height: 1.5;
+  color: #444;
+  font-size: 14px;
+}
+
+.comment-content p {
+  margin: 0;
+  word-wrap: break-word;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.comment-action-btn {
+  background: none;
+  border: none;
+  color: #6c63ff;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 5px;
+  transition: all 0.2s;
+}
+
+.comment-action-btn:hover {
+  text-decoration: underline;
+  background-color: rgba(108, 99, 255, 0.05);
+  border-radius: 4px;
+}
+
+.comment-edit-form {
+  margin-bottom: 10px;
+}
+
+.comment-edit-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.comment-edit-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.comment-save-btn, .comment-cancel-btn {
+  padding: 5px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.comment-save-btn {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+}
+
+.comment-save-btn:hover {
+  background-color: #5a52d5;
+}
+
+.comment-cancel-btn {
+  background-color: #f1f1f1;
+  color: #333;
+  border: none;
+}
+
+.comment-cancel-btn:hover {
+  background-color: #e1e1e1;
+}
+
+.comment-error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: rgba(231, 76, 60, 0.05);
+  border-radius: 4px;
+}
