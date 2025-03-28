@@ -29,7 +29,7 @@ Make sure you have the following installed:
 
 Clone the repository:
 ```bash
-git clone [Link]
+git clone https://github.com/aryank2240/CS253-BitByBit-Project.git
 cd [path]
 ```
 Install all the dependencies
