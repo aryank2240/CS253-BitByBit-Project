@@ -44,7 +44,7 @@ npm install
 ```
 Run the server:
 ```bash
-cd backend
+cd ../backend
 npm start
 ```
 Create the .env files for configurations.
