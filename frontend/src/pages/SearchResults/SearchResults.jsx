@@ -58,7 +58,12 @@ const SearchResults = () => {
     const fetchResults = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/blog/search?query=${encodeURIComponent(query)}`);
+        const response = await axios.get(`http://localhost:5000/api/blog/search?query=${encodeURIComponent(query)}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        });
         setResults(response.data);
         setError('');
       } catch (error) {

@@ -11,6 +11,7 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
 const iitkEmailRegex = /^[a-zA-Z0-9._%+-]+@iitk\.ac\.in$/;
  
 
+
 async function createUser(req, res) {
   try {
     const { name, email, password, role} = req.body;

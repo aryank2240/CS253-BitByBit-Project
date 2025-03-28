@@ -11,7 +11,14 @@ const CommentList = ({ blogId, newComment }) => {
   const fetchComments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/blog/comments/${blogId}`);
+      const response = await axios.get(`http://localhost:5000/api/blog/comments/${blogId}`
+        , {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        }
+      );
       
       // Sort comments by creation date (newest first)
       const sortedComments = response.data.sort((a, b) => 
