@@ -98,6 +98,36 @@ async function updateBlog(req , res){
         console.log(err);
       }
 }
+async function searchBlogs(req, res) {
+  try {
+    const { query } = req.query;
+    
+    if (!query || query.trim() === '') {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+    
+    // Create a regex search pattern that is case insensitive
+    const searchPattern = new RegExp(query, 'i');
+    
+    // Search in title, content, and author_name
+    const blogs = await Blog.find({
+      $or: [
+        { title: searchPattern },
+        { content: searchPattern },
+        { author_name: searchPattern }
+      ]
+    }).sort({ CreatedAt: -1 }); // Sort by newest first
+    
+    if (!blogs || blogs.length === 0) {
+      return res.status(404).json({ message: "No blogs found matching your search" });
+    }
+    
+    res.json(blogs);
+  } catch (error) {
+    console.error("Error searching blogs:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 
 async function addCommentOrTags(req, res) {
@@ -173,17 +203,26 @@ async function getReportedBlogs(req,res){
   }
 }
 
-async function getCommentsForBlog(req,res)  {
+async function getCommentsForBlog(req, res) {
   try {
-    const id=req.params;
+    const id = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid blog ID" });
     }
-    const comments = await Comment.find({ blog: id }); // Find all comments linked to blogId
-    if(!comments) res.status(404).json({message:"No comments for this blog"})
-    console.log(comments);
+    
+    // Fix: Use ParentBlogId instead of blog, and populate the UserId to get user details
+    const comments = await Comment.find({ ParentBlogId: id }).populate('UserId', 'name');
+    
+    if (!comments || comments.length === 0) {
+      return res.status(404).json({ message: "No comments for this blog" });
+    }
+    
+    // Return the comments as JSON response
+    res.json(comments);
   } catch (error) {
     console.error("Error fetching comments:", error);
+    // Add proper error response
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -313,6 +352,7 @@ const upvoteBlog = async (req, res) => {
 };
 
 
-export {createBlog ,getTopBlogs, getBlog , deleteBlog , updateBlog , addCommentOrTags, getReportedBlogs, getCommentsForBlog, getTagForBlog
-  , upvoteBlog, downvoteBlog
+export {
+  createBlog, getTopBlogs, getBlog, deleteBlog, updateBlog, addCommentOrTags, 
+  getReportedBlogs, getCommentsForBlog, getTagForBlog, upvoteBlog, downvoteBlog, searchBlogs
 }

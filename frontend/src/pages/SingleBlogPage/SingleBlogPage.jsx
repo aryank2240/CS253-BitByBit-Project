@@ -6,10 +6,12 @@ import "./SingleBlogPage.css"
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'
 import { FiSearch, FiBell, FiBookmark, FiSettings } from 'react-icons/fi';
-import { FaRegShareSquare,FaRegCommentDots  } from "react-icons/fa";
+import { FaRegShareSquare, FaRegCommentDots } from "react-icons/fa";
 import VoteComponent from "../../components/Vote/Vote"
 import { EmailShareButton, WhatsappShareButton, TwitterShareButton } from 'react-share'
 import { LuSendHorizontal } from "react-icons/lu";
+// Import the new CommentList component
+import CommentList from "../../components/Comment/CommentList";
 
 const SingleBlogPage = () => {
   const [comment, setComment] = useState("");
@@ -26,7 +28,9 @@ const SingleBlogPage = () => {
   const [blogCount, setBlogCount] = useState(0);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-  const [isSaved,setIsSaved]=useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  // Add a state to track when new comments are added
+  const [newCommentAdded, setNewCommentAdded] = useState(false);
 
   useEffect(() => {
     const fetchAuthor = async () => {
@@ -53,6 +57,8 @@ const SingleBlogPage = () => {
     };
     fetchAuthor();
   }, [blog]);
+  
+  // Keep this effect for backward compatibility, but we'll use CommentList for display
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -75,7 +81,6 @@ const SingleBlogPage = () => {
   }, [blogId])
 
   useEffect(() => {
-
     const fetchTags = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/blog/tag/${blogId}`, {
@@ -129,7 +134,6 @@ const SingleBlogPage = () => {
 
   // Fetch blog details
   useEffect(() => {
-   
     const fetchBlog = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`, {
@@ -144,11 +148,9 @@ const SingleBlogPage = () => {
         const blogData = response?.data;
         setBlog(blogData);
         setAuthorName(blogData?.author_name);
-          if(user?.id){
-            setIsSaved(blogData?.SavedBy?.includes(user?.id))
-          }
-         
-        
+        if (user?.id) {
+          setIsSaved(blogData?.SavedBy?.includes(user?.id))
+        }
       } catch (error) {
         if (error.response && error.response.status === 400) {
           navigate("/404");
@@ -158,190 +160,189 @@ const SingleBlogPage = () => {
       }
     };
     fetchBlog();
-  }, [blogId,user]);
+  }, [blogId, user]);
 
   const addComments = async () => {
     if (!comment) return;
     if (!user) return;
     try {
-        const content= comment;
-        const ParentBlogId= blogId;
-       const  UserId= user?.id;
+      const content = comment;
+      const ParentBlogId = blogId;
+      const UserId = user?.id;
       const res = await axios.post(`http://localhost:5000/api/comment/post`, {
         content,
         ParentBlogId,
         UserId
-  },  {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-    }
-  });
-    console.log(res.data);
-    // Optionally, clear the comment input
-    setComment("");
-  } catch (err) {
-    console.log(err);
-  }
-};
 
-const SaveBlogs = async () => {
-  if(isSaved){return;}
-      try {
-        await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
-          { blogId }, {
+      }, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(res.data);
+      // Clear the comment input
+      setComment("");
+      // Toggle newCommentAdded to trigger a refresh in CommentList
+      setNewCommentAdded(prev => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const SaveBlogs = async () => {
+    if (isSaved) { return; }
+    try {
+      await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
+        { blogId }, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
           }
-        );
-        setIsSaved(true);
-      } catch (error) {
-        console.error("Error saving blog:", error);
-      }
-    };
-    
-
-return (
-  <div className="single-blog-app">
-    {/* Header/Navigation */}
-    <header className="single-blog-header">
-      <div className="search-add-container">
-        <div className="search-container">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search for blogs, friends"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          />
-          <button className="search-button" onClick={handleSearch}>
-            <FiSearch className="search-icon" />
-          </button>
-        </div>
-      </div>
-
-      <div className="single-blog-header-right">
-        <div className="single-blog-profile-icon small">
-          <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black', cursor: 'pointer' }} onClick={() => { navigate(`/user-profile`) }} />
-        </div>
-        <button className="single-blog-add-new-post" onClick={() => navigate('/write')}>
-          Add New Blog +
-        </button>
-      </div>
-    </header>
-
-    <div className="single-blog-content-container">
-      {/* Main Content Area */}
-      <main className="single-blog-main-content">
-        {/* Post */}
-        <div className="single-blog-post">
-          <div className="single-blog-post-header">
-            <div className="single-blog-author">
-              <div className="single-blog-profile-icon">
-                <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'black' }} />
-              </div>
-              <span className="single-blog-author-name">{blog?.author_name}</span>
-            </div>
-            <button className="single-blog-more-options">⋮</button>
-          </div>
-
-          <div className="single-blog-post-content">
-            <h2 className="single-blog-post-title">{blog?.title}</h2>
-            <p className="single-blog-post-text">
-              <ReactMarkdown rehypePlugins={[rehypeRaw]}>{blog?.content}</ReactMarkdown>
-            </p>
-
-            <div className="single-blog-hashtags">
-            </div>
-          </div>
-
-          <div className="single-blog-post-actions">
-            <div className="single-blog-vote-section">
-              <VoteComponent blogId={blogId} userId={user?.id} />
-            </div>
-
-            <div className="single-blog-comments-count">
-              <span className="comment-icon"><FaRegCommentDots  size={20}/></span>
-              <span>{blog?.comments?.length}</span>
-            </div>
-
-            <div className="single-blog-share-section">
-              <button className="single-blog-share-button">
-                <span className="share-icon">Share</span>
-                <span><TwitterShareButton url={window.location.href} quote={`Check out this blog....`}><FaRegShareSquare /></TwitterShareButton></span>
-              </button>
-            </div>
+      );
+      setIsSaved(true);
+    } catch (error) {
+      console.error("Error saving blog:", error);
+    }
+  };
 
 
-
-            <div className="single-blog-bookmark-section">
-              <button className={`icon-button ${isSaved ? "active": ""}`} onClick={()=>{SaveBlogs();}}>
-                <FiBookmark size={20} />
-              </button>
-            </div>
-          </div>
-
-          <div className="single-blog-comment-input">
-            <div className="single-blog-profile-icon small">
-              <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black' }} />
-            </div>
+  return (
+    <div className="single-blog-app">
+      {/* Header/Navigation */}
+      <header className="single-blog-header">
+        <div className="search-add-container">
+          <div className="search-container">
             <input
               type="text"
-              placeholder="Write your comment..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              className="search-input"
+              placeholder="Search for blogs, friends"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button
-              className="single-blog-send-button"
-              style={{ cursor: 'pointer' }}
-              onClick={addComments}
-            >
-              <LuSendHorizontal  />
+            <button className="search-button" onClick={handleSearch}>
+              <FiSearch className="search-icon" />
             </button>
           </div>
         </div>
 
-        {/* Comments Section */}
-        <div className="single-blog-comments">
+        <div className="single-blog-header-right">
+          <div className="single-blog-profile-icon small">
+            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black', cursor: 'pointer' }} onClick={() => { navigate(`/user-profile`) }} />
+          </div>
+          <button className="single-blog-add-new-post" onClick={() => navigate('/write')}>
+            Add New Blog +
+          </button>
         </div>
-      </main>
+      </header>
 
-      {/* Profile Sidebar */}
-      <aside className="single-blog-profile">
-        <div className="single-blog-profile-card">
-          <div className="single-blog-profile-picture">
-            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', border: 'black' }} />
-            <div className="single-blog-online-indicator"></div>
+      <div className="single-blog-content-container">
+        {/* Main Content Area */}
+        <main className="single-blog-main-content">
+          {/* Post */}
+          <div className="single-blog-post">
+            <div className="single-blog-post-header">
+              <div className="single-blog-author">
+                <div className="single-blog-profile-icon">
+                  <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'black' }} />
+                </div>
+                <span className="single-blog-author-name">{blog?.author_name}</span>
+              </div>
+              <button className="single-blog-more-options">⋮</button>
+            </div>
+
+            <div className="single-blog-post-content">
+              <h2 className="single-blog-post-title">{blog?.title}</h2>
+              <p className="single-blog-post-text">
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{blog?.content}</ReactMarkdown>
+              </p>
+
+              <div className="single-blog-hashtags">
+              </div>
+            </div>
+
+            <div className="single-blog-post-actions">
+              <div className="single-blog-vote-section">
+                <VoteComponent blogId={blogId} userId={user?.id} />
+              </div>
+
+              <div className="single-blog-comments-count">
+                <span className="comment-icon"><FaRegCommentDots size={20} /></span>
+                <span>{blog?.comments?.length}</span>
+              </div>
+
+              <div className="single-blog-share-section">
+                <button className="single-blog-share-button">
+                  <span className="share-icon">Share</span>
+                  <span><TwitterShareButton url={window.location.href} quote={`Check out this blog....`}><FaRegShareSquare /></TwitterShareButton></span>
+                </button>
+              </div>
+
+              <div className="single-blog-bookmark-section">
+                <button className={`icon-button ${isSaved ? "active" : ""}`} onClick={() => { SaveBlogs(); }}>
+                  <FiBookmark size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div className="single-blog-comment-input">
+              <div className="single-blog-profile-icon small">
+                <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black' }} />
+              </div>
+              <input
+                type="text"
+                placeholder="Write your comment..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addComments()}
+              />
+              <button
+                className="single-blog-send-button"
+                style={{ cursor: 'pointer' }}
+                onClick={addComments}
+              >
+                <LuSendHorizontal />
+              </button>
+            </div>
           </div>
 
-          <h2 className="single-blog-profile-name">{blog?.author_name}</h2>
-          <p className="single-blog-profile-handle">{email}</p>
+          {/* Comments Section - Use our new CommentList component */}
+          <div className="single-blog-comments">
+            <CommentList blogId={blogId} newComment={newCommentAdded} />
+          </div>
+        </main>
 
-          <div className="single-blog-stats">
-            <div className="single-blog-stat">
-              <p className="single-blog-stat-value">{blogCount}</p>
-              <p className="single-blog-stat-label">Blogs</p>
+        {/* Profile Sidebar */}
+        <aside className="single-blog-profile">
+          <div className="single-blog-profile-card">
+            <div className="single-blog-profile-picture">
+              <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', border: 'black' }} />
+              <div className="single-blog-online-indicator"></div>
             </div>
 
-            <div className="single-blog-stat">
-              <p className="single-blog-stat-value">{followersCount}</p>
-              <p className="single-blog-stat-label">Followers</p>
-            </div>
+            <h2 className="single-blog-profile-name">{blog?.author_name}</h2>
+            <p className="single-blog-profile-handle">{email}</p>
 
-            <div className="single-blog-stat">
-              <p className="single-blog-stat-value">{followingCount}</p>
-              <p className="single-blog-stat-label">Following</p>
+            <div className="single-blog-stats">
+              <div className="single-blog-stat">
+                <p className="single-blog-stat-value">{blogCount}</p>
+                <p className="single-blog-stat-label">Blogs</p>
+              </div>
+
+              <div className="single-blog-stat">
+                <p className="single-blog-stat-value">{followersCount}</p>
+                <p className="single-blog-stat-label">Followers</p>
+              </div>
+
+              <div className="single-blog-stat">
+                <p className="single-blog-stat-value">{followingCount}</p>
+                <p className="single-blog-stat-label">Following</p>
+              </div>
             </div>
           </div>
-        </div>
-      </aside>
+        </aside>
+      </div>
     </div>
-  </div>
-
-)
+  )
 }
 
 export default SingleBlogPage;

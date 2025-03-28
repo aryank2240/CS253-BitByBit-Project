@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router({ mergeParams: true });
-import { createBlog, getBlog, deleteBlog, updateBlog, addCommentOrTags,getTopBlogs, getReportedBlogs, getCommentsForBlog,getTagForBlog ,
-  upvoteBlog,downvoteBlog,
+import { createBlog, getBlog, deleteBlog, updateBlog, addCommentOrTags, getTopBlogs, getReportedBlogs, 
+  getCommentsForBlog, getTagForBlog, upvoteBlog, downvoteBlog, searchBlogs 
 } from '../controllers/blog.js';
 import { protect , admin } from '../middleware/authMiddleware.js'
 router.post("/post", protect, async (req, res) => {
@@ -15,11 +15,14 @@ router.get("/reported", protect, admin, async (req, res) => {
   getReportedBlogs(req, res);
 });
 
-router.get("/comments/:id", protect, async(req,res)=>{
+router.get("/search", async (req, res) => {
+  searchBlogs(req, res);
+});
+router.get("/comments/:id", async(req,res)=>{
   getCommentsForBlog(req,res);
 });
+router.get("/tag/:id", async(req,res)=>{
 
-router.get("/tag/:id", protect, async(req,res)=>{
   getTagForBlog(req,res);
 });
 router.get("/:id", protect, async (req, res) => {

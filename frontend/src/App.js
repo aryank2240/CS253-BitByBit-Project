@@ -11,6 +11,7 @@ import AccountProfilePage from "./pages/Profile/AccountProfile.jsx"
 import ProfilePage from "./pages/Profile/OwnProfile.jsx";
 import EmailVerification from "./pages/SignUP_and_Login/EmailVerification.jsx";
 import BlogWritingPage from "./pages/Blog-writing/BlogWriting.jsx"
+import SearchResults from "./pages/SearchResults/SearchResults.jsx";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/write" element={<BlogWritingPage />} />
         <Route path="/account/:id" element={<AccountProfilePage />} />
         <Route path="*" element={<h1><Error404 /></h1>} />
+        <Route path="/search" element={<SearchResults />} />
       </Routes>
     </Router>
   );
