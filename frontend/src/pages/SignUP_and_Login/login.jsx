@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
+import {  FaEnvelope, FaLock } from "react-icons/fa";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -26,7 +26,7 @@ const Login = () => {
                 }
             );
             
-            const { token, user } = response.data;
+            const { token } = response.data;
             localStorage.setItem("jwtToken", token);
             setSuccess("Login successful! Redirecting...");
             
@@ -37,6 +37,7 @@ const Login = () => {
         }
     };
 
+    
     return (
          <div className="signup-card">
                 <h2>Log In Your Account</h2>

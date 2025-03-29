@@ -3,7 +3,9 @@
     padding: 24px;
     border-radius: 15px;
     box-shadow: var(--card-shadow);
-    height:300px;
+    max-height:600px;
+
+
 }
 
 .sidebar-section {

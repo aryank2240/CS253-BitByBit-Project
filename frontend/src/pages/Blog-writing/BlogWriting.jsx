@@ -75,6 +75,7 @@ const BlogWritingPage = () => {
           ['bold', 'italic', 'underline', 'strike'],
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['link',  'code-block'],
+
           ['clean'], // Clear formatting
         ],
       };

@@ -6,7 +6,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import './Admin.css';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-
+import { IoReturnDownBackOutline } from "react-icons/io5";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -197,6 +197,8 @@ const Admin = () => {
       <header className="header-content">
         <div className="header-main-row">
           <div className="search-add-container">
+                              <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
+            
             <div className="search-container">
               <input
                 type="text"

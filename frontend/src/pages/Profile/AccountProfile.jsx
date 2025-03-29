@@ -6,8 +6,8 @@ import {jwtDecode} from "jwt-decode";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar/Sidebar.js";
 import Blog from "../../components/Blog/Blog.js";
-import { FiSearch, FiBell, FiBookmark, FiSettings } from "react-icons/fi";
-
+import { FiSearch } from "react-icons/fi";
+import { IoReturnDownBackOutline } from "react-icons/io5";
 const AccountProfilePage = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -133,6 +133,8 @@ const AccountProfilePage = () => {
   return (
     <div className="profile-container">
       <div className="search-add-container">
+                          <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
+        
         <div className="search-container">
           <input
             type="text"

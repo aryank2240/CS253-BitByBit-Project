@@ -263,4 +263,21 @@ async function followUsers(req, res) {
   }
 }
 
-export { createUser, getUser, deleteUser, updateUser, loginUser, SaveBlogs, getBlogsbyFollowedUsers , getSavedBlogs, getBlogsbyUser, followUsers}
+
+async function getTopBloggers(req,res){
+try{
+          const topBloggers = await User.find().sort({blogCount: -1}).limit(5);
+          if(topBloggers.length===0){return res.status(404).json({err:"No users found"})}
+          res.json(topBloggers);
+  
+}
+catch(err){
+  console.error("Error in getTopBloggers:", err);
+  res.status(500).json({ 
+    error: "Internal Server Error",
+    message: err.message 
+  });
+}
+}
+
+export { createUser, getBlogsbyUser, getUser, deleteUser, updateUser, loginUser, SaveBlogs, getBlogsbyFollowedUsers , getSavedBlogs, followUsers, getTopBloggers}

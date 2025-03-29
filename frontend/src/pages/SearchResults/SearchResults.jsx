@@ -6,6 +6,7 @@ import { FiSearch } from 'react-icons/fi';
 import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import './SearchResults.css';
+import { IoReturnDownBackOutline } from "react-icons/io5";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
@@ -91,8 +92,13 @@ const SearchResults = () => {
 
   return (
     <div className="search-results-container">
+   
       <header className="search-results-header">
+      
+        <div className='search-results-header-left'>
+        <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
         <div className="search-container">
+          
           <input
             type="text"
             className="search-input"
@@ -105,6 +111,8 @@ const SearchResults = () => {
             <FiSearch className="search-icon" />
           </button>
         </div>
+        </div>
+      
 
         <div className="header-right">
           <button className="add-blog-button" onClick={() => navigate('/write')}>

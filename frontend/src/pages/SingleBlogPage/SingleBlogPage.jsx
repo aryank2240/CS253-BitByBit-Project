@@ -1,18 +1,18 @@
-import { react, useState, useEffect } from "react"
+import {  useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 import "./SingleBlogPage.css"
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'
-import { FiSearch, FiBell, FiBookmark, FiSettings } from 'react-icons/fi';
+import { FiSearch, FiBookmark } from 'react-icons/fi';
 import { FaRegShareSquare, FaRegCommentDots } from "react-icons/fa";
 import VoteComponent from "../../components/Vote/Vote"
-import { EmailShareButton, WhatsappShareButton, TwitterShareButton } from 'react-share'
+import {  TwitterShareButton } from 'react-share'
 import { LuSendHorizontal } from "react-icons/lu";
 // Import the new CommentList component
 import CommentList from "../../components/Comment/CommentList";
-
+import { IoReturnDownBackOutline } from "react-icons/io5";
 const SingleBlogPage = () => {
   const [comment, setComment] = useState("");
   const { id: blogId } = useParams();
@@ -56,7 +56,7 @@ const SingleBlogPage = () => {
       }
     };
     fetchAuthor();
-  }, [blog]);
+  }, [blog,authorName]);
   
   // Keep this effect for backward compatibility, but we'll use CommentList for display
   useEffect(() => {
@@ -78,7 +78,7 @@ const SingleBlogPage = () => {
       }
     };
     fetchComments();
-  }, [blogId])
+  }, [blogId, navigate])
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -99,7 +99,7 @@ const SingleBlogPage = () => {
       }
     };
     fetchTags();
-  }, [blogId])
+  }, [blogId,navigate])
 
   const handleSearch = () => {
     if (searchTerm.trim()) {
@@ -160,7 +160,7 @@ const SingleBlogPage = () => {
       }
     };
     fetchBlog();
-  }, [blogId, user]);
+  }, [blogId, user,navigate]);
 
   const addComments = async () => {
     if (!comment) return;
@@ -214,6 +214,8 @@ const SingleBlogPage = () => {
       {/* Header/Navigation */}
       <header className="single-blog-header">
         <div className="search-add-container">
+                  <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
+          
           <div className="search-container">
             <input
               type="text"

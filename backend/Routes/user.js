@@ -1,8 +1,11 @@
 import express from 'express'
 const router = express.Router({ mergeParams: true });
-import { createUser, getUser, deleteUser, updateUser,loginUser, SaveBlogs, getBlogsbyFollowedUsers, getSavedBlogs, getBlogsbyUser,followUsers} from './../controllers/user.js';
-import { get } from 'http';
+import {  createUser,getUser, deleteUser, updateUser,loginUser,SaveBlogs, getBlogsbyFollowedUsers, getSavedBlogs, getBlogsbyUser,followUsers,getTopBloggers} from './../controllers/user.js';
 import { protect , admin } from '../middleware/authMiddleware.js'
+
+router.get("/topUsers",  async (req, res) => {
+  getTopBloggers(req, res);
+});
 router.get("/:id", protect, async (req, res) => {
   getUser(req, res);
 });
@@ -32,5 +35,7 @@ router.patch("/:id",  protect,async (req, res) => {
 router.get("/:id/SavedBlogs", protect, async (req, res) => {
   getSavedBlogs(req, res);
 });
+
+
 
 export default router;

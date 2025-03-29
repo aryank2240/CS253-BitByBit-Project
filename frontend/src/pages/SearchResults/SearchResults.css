@@ -15,7 +15,13 @@
   position: relative;
   width: 500px;
 }
-
+.search-results-header-left{
+  display: flex;
+  flex-direction: row;
+  column-gap: 30px;
+  align-items: center;
+justify-content: flex-end;
+}
 .search-input {
   width: 100%;
   padding: 12px 45px 12px 20px;

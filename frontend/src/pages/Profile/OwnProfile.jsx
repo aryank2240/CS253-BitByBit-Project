@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./OwnProfile.css";
-import BlogCard from "../../components/Blog/Blog.js";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
-import Sidebar from "../../components/Sidebar/Sidebar.js";
 import Blog from "../../components/Blog/Blog.js";
-import { FiSearch, FiBell, FiBookmark, FiSettings } from 'react-icons/fi';
+import { FiSearch, } from 'react-icons/fi';
+import { IoReturnDownBackOutline } from "react-icons/io5";
+import WritersSuggestion from "../../components/WritersSuggestion/WritersSuggestion.jsx";
 const OwnProfilePage = () => {
   // ✅ State for Profile Information
 
@@ -145,6 +145,8 @@ const OwnProfilePage = () => {
 
 
       <div className="search-add-container">
+                          <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
+        
         <div className="search-container">
           <input
             type="text"
@@ -222,7 +224,7 @@ const OwnProfilePage = () => {
 
         <div className="right-section">
           <div className="writer-suggestions">
-            <Sidebar />
+            <WritersSuggestion />
           </div>
         </div>
       </div>

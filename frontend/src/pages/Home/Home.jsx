@@ -7,9 +7,8 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import './Home.css';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import { FaUniregistry } from 'react-icons/fa';
-import { act } from 'react';
 
+import { IoReturnDownBackOutline } from "react-icons/io5";
 const Home = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -189,6 +188,7 @@ const Home = () => {
       <header className="header-content">
         <div className="header-main-row">
           <div className="search-add-container">
+            
             <div className="search-container">
               <input
                 type="text"
