@@ -7,9 +7,9 @@ import Blog from "../../components/Blog/Blog.js";
 import { FiSearch, } from 'react-icons/fi';
 import { IoReturnDownBackOutline } from "react-icons/io5";
 import WritersSuggestion from "../../components/WritersSuggestion/WritersSuggestion.jsx";
-const OwnProfilePage = () => {
-  // ✅ State for Profile Information
 
+const OwnProfilePage = () => {
+  
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [userBlogs, setUserBlogs] = useState([]);

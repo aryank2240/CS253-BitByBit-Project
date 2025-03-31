@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./OwnProfile.css";
-import BlogCard from "../../components/Blog/Blog.js";
 import { useNavigate, useParams } from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
 import axios from "axios";
@@ -8,6 +7,7 @@ import Sidebar from "../../components/Sidebar/Sidebar.js";
 import Blog from "../../components/Blog/Blog.js";
 import { FiSearch } from "react-icons/fi";
 import { IoReturnDownBackOutline } from "react-icons/io5";
+
 const AccountProfilePage = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);

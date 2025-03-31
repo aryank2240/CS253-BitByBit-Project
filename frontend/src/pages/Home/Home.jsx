@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiSearch, FiBell, FiBookmark, FiSettings } from 'react-icons/fi';
+import { FiSearch,  FiBookmark} from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -8,7 +8,6 @@ import './Home.css';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
-import { IoReturnDownBackOutline } from "react-icons/io5";
 const Home = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,13 +21,6 @@ const Home = () => {
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [savedBlogs, setSavedBlogs] = useState([]);
 
-
-  // const betterDate = (date) => {
-  //   const newDate = new Date(date).toLocaleDateString('en-US', 
-  
-  
-  // Example Usage
- 
   
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
@@ -75,31 +67,6 @@ const Home = () => {
     };
     fetchSavedBlog();
   }, [user]);
-
-  
-
-  const SaveBlogs = ({ blogId }) => {
-    try {
-      const save = async () => {
-        try {
-          const response = await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
-            { blogId }
-            , {
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-              }
-            }
-          );
-        } catch (error) {
-          console.error("Error saving blog:", error);
-        }
-      }
-    }
-    catch (err) {
-      console.error(err);
-    }
-  }
 
 
 

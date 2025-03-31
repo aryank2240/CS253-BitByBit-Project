@@ -9,7 +9,6 @@ import "react-quill/dist/quill.snow.css";
 const BlogEditor = () => {
   const location = useLocation();
   const { blogId } = location.state || {};
-  const [tags, setTags] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     visibility: "",

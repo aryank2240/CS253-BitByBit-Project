@@ -13,15 +13,14 @@ import { LuSendHorizontal } from "react-icons/lu";
 // Import the new CommentList component
 import CommentList from "../../components/Comment/CommentList";
 import { IoReturnDownBackOutline } from "react-icons/io5";
+
 const SingleBlogPage = () => {
   const [comment, setComment] = useState("");
   const { id: blogId } = useParams();
   const [blog, setBlog] = useState(null);
   const [user, setUser] = useState(null);
-  const [comments, setComments] = useState([]);
   const [tags, setTags] = useState([]);
   const navigate = useNavigate();
-  const [author, setAuthor] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [authorName, setAuthorName] = useState('Anonymous');
   const [email, setEmail] = useState('Anonymous')
@@ -44,7 +43,6 @@ const SingleBlogPage = () => {
         }
         );
         console.log(response.data);
-        setAuthor(response.data);
         if (authorName !== 'Anonymous') {
           setEmail(response.data.email);
           setBlogCount(response.data.blogCount);
@@ -58,28 +56,7 @@ const SingleBlogPage = () => {
     fetchAuthor();
   }, [blog,authorName]);
   
-  // Keep this effect for backward compatibility, but we'll use CommentList for display
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/blog/comments/${blogId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-          }
-        });
-        setComments(response?.data);
-      } catch (error) {
-        if (error.response && error.response.status === 400) {
-          navigate("/404");
-        } else {
-          console.error("Error fetching Comments:", error);
-        }
-      }
-    };
-    fetchComments();
-  }, [blogId, navigate])
-
+  
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -258,6 +235,9 @@ const SingleBlogPage = () => {
 
             <div className="single-blog-post-content">
               <h2 className="single-blog-post-title">{blog?.title}</h2>
+              {tags.map(tag =>(
+                <p style={{color:"purple"}}>{`#${tag?.name}`}</p>
+              ))}
               <p className="single-blog-post-text">
                 <ReactMarkdown rehypePlugins={[rehypeRaw]}>{blog?.content}</ReactMarkdown>
               </p>

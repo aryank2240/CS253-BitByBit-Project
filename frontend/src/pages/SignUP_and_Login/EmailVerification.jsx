@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
+import { FaLock } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 const EmailVerification = () => {
   const [otp, setOtp] = useState('');
@@ -37,35 +37,7 @@ const EmailVerification = () => {
 
 
   return (
-    // <div className="email-verification-container">
-    //   <h2>Verify Your Email</h2>
-    //   <p>Please enter the verification code sent to your email address.</p>
-      
-    //   {error && <div className="alert alert-danger">{error}</div>}
-      
-    //   <form onSubmit={handleSubmit}>
-    //     <div className="form-group">
-    //       <label htmlFor="otp">Verification Code</label>
-    //       <input
-    //         type="text"
-    //         id="otp"
-    //         value={otp}
-    //         onChange={(e) => setOtp(e.target.value)}
-    //         className="form-control"
-    //         placeholder="Enter 6-digit code"
-    //         required
-    //       />
-    //     </div>
-        
-    //     <button 
-    //       type="submit" 
-    //       className="btn btn-primary"
-    //       disabled={loading}
-    //     >
-    //       {loading ? 'Verifying...' : 'Verify Email'}
-    //     </button>
-    //   </form>
-    // </div>
+  
      <div className="signup-card">
                     <h2>Verify Your Email</h2>
                     <p>Please enter the verification code sent to your email address.</p>

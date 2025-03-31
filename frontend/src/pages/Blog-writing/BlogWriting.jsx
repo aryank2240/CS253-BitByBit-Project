@@ -1,8 +1,7 @@
 import {React, useState, useEffect }from 'react';
 import './BlogWriting.css';
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import { FaCheckCircle } from "react-icons/fa";
+import {  useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 

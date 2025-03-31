@@ -37,6 +37,7 @@
   flex-direction: row;
   align-items: center;
   column-gap: 45px;
+  
 }
 
 .search-container {
@@ -44,7 +45,7 @@
   align-items: center;
   background-color: #f8f9fa;
   border-radius: 24px;
-  padding: 8px 16px;
+  padding: 8px 8px;
 }
 
 .search-input {
