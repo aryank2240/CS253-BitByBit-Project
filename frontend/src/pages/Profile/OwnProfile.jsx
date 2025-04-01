@@ -103,7 +103,6 @@ const OwnProfilePage = () => {
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
           });
-        console.log(user.followersCount);
         setUserBlogs(res.data);
       } catch (error) {
         console.error(error);

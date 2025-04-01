@@ -66,7 +66,6 @@ const Admin = () => {
             }
           }).then((res) => {
             setSavedBlogs(res.data);
-            console.log(res.data);
           });
         } catch (error) {
           console.error("Error fetching saved blogs:", error);
@@ -86,7 +85,7 @@ const Admin = () => {
             }
           }).then((res) => {
             setBlog(res.data);
-            console.log(res.data);
+
           });
         } catch (error) {
           console.error('Error fetching blogs:', error);
@@ -105,7 +104,7 @@ const Admin = () => {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         }).then((res) => {
-          console.log(res.data);
+
         });
       } catch (error) {
         console.error('Error fetching blogs:', error);
@@ -122,7 +121,6 @@ const Admin = () => {
             }
           }).then((res) => {
             setReportedBlogs(res.data);
-            console.log(res.data);
           });
         } catch (error) {
           console.error('Error fetching Reported blogs:', error);

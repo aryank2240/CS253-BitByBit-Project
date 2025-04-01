@@ -42,7 +42,6 @@ const SingleBlogPage = () => {
           }
         }
         );
-        console.log(response.data);
         if (authorName !== 'Anonymous') {
           setEmail(response.data.email);
           setBlogCount(response.data.blogCount);
@@ -69,7 +68,7 @@ const SingleBlogPage = () => {
         setTags(response?.data);
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          navigate("/404");
+          // navigate("/404");
         } else {
           console.error("Error fetching Tags:", error);
         }
@@ -120,7 +119,7 @@ const SingleBlogPage = () => {
           }
         });
         if (response.status === 400) {
-          navigate("/404");
+          // navigate("/404");
         }
         const blogData = response?.data;
         setBlog(blogData);
@@ -130,7 +129,7 @@ const SingleBlogPage = () => {
         }
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          navigate("/404");
+          //navigate("/404");
         } else {
           console.error("Error fetching blog:", error);
         }
@@ -158,8 +157,7 @@ const SingleBlogPage = () => {
         },
       
       });
-      console.log(res.data);
-      // Clear the comment input
+  
       setComment("");
       // Toggle newCommentAdded to trigger a refresh in CommentList
       setNewCommentAdded(prev => !prev);

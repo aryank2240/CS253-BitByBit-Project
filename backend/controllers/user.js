@@ -34,7 +34,7 @@ async function createUser(req, res) {
       password: hashedPassword,
       role
     });
-    console.log(name,email,password);
+
     if(!name || !email || !password){
       return res.status(404).json({message:"You are missing one of the fields"});
     }

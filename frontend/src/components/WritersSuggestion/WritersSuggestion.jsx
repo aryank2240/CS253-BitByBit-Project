@@ -19,7 +19,6 @@ const WritersSuggestion = () => {
           }
         }
          );
-         console.log(response?.data);
          setPopularUsers(response?.data);
        } catch (error) {
          console.error("Error fetching popular Users:", error);

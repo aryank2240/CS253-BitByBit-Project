@@ -19,8 +19,7 @@ async function createBlog(req , res){
         await user.save();
 
         res.json(blog);
-    
-    console.log(blog);
+
       }
       catch (err) {
     
@@ -98,6 +97,7 @@ async function updateBlog(req , res){
         console.log(err);
       }
 }
+
 async function searchBlogs(req, res) {
   try {
     const { query } = req.query;
@@ -234,7 +234,7 @@ const getTagForBlog = async (req,res) => {
     }
     const tags = await Tag.find({ blogs: id }); // Find all comments linked to blogId
     if (tags.length === 0) {
-      console.error("No tags for this blog");
+    
       return res.status(404).json({ message: "No tags for this blog" });
      
     }

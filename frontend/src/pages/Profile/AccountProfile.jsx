@@ -3,7 +3,7 @@ import "./OwnProfile.css";
 import { useNavigate, useParams } from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
 import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar.js";
+import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 import Blog from "../../components/Blog/Blog.js";
 import { FiSearch } from "react-icons/fi";
 import { IoReturnDownBackOutline } from "react-icons/io5";

@@ -22,6 +22,10 @@ const SignUpCard = () => {
     const handleSignUp = async () => {
 
         try {
+            if(password&&password.length<6){
+              setError('Password should be more than or equal to 6 characters');
+              return;
+            }
             if (password===confirmPassword){
             const response = await axios.post(
                 "http://localhost:5000/api/auth/register",

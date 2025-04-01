@@ -3,6 +3,9 @@ import { FiSearch,  FiBookmark} from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
+import { Ring2 } from 'ldrs/react'
+import 'ldrs/react/Ring2.css'
+
 
 import './Home.css';
 import { jwtDecode } from 'jwt-decode';
@@ -80,7 +83,6 @@ const Home = () => {
           }
         }).then((res) => {
           setBlogs(res.data);
-          console.log(res.data);
         });
       } catch (error) {
         console.error('Error fetching blogs:', error);
@@ -144,7 +146,16 @@ const Home = () => {
     
   }, [activeTab, blogs, followedBlogs,savedBlogs, viewMode]);
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return <div className="loading">
+<Ring2
+  size="40"
+  stroke="5"
+  strokeLength="0.25"
+  bgOpacity="0.1"
+  speed="0.8"
+  color="black" 
+/>
+</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (

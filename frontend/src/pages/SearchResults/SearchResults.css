@@ -4,11 +4,30 @@
   padding: 20px;
 }
 
+.active-tab{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 1rem 0;
+  background: var(--background-color);
+}
+
 .search-results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+
+}
+.tag-search-result-wrapper{
+  background-color: #ffffff;
+  max-width: 700px;
+  height: 75px;
+  border-radius: 10px;
+  overflow: hidden;
+  align-content: center;
+  transition: transform 0.2s;
+  padding-left: 25px;
+  color: #5a52d5;
 }
 
 .search-container {
@@ -157,9 +176,11 @@ justify-content: flex-end;
 
 .blog-wrapper {
   border-radius: 10px;
+  
   overflow: hidden;
   transition: transform 0.2s;
 }
+
 
 .blog-wrapper:hover {
   transform: translateY(-2px);

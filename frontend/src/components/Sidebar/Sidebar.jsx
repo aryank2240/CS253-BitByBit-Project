@@ -20,7 +20,6 @@ const Sidebar = () => {
           }
         }
          );
-         console.log(response.data);
          setPopularTags(response.data);
        } catch (error) {
          console.error("Error fetching popular tags:", error);
@@ -43,7 +42,7 @@ const Sidebar = () => {
               className="tag-item-sidebar"
 
             >
-              <span className="tag-name">{tag?.name}</span>
+              <span className="tag-name" style={{color:'#6c63ff'}} onClick={()=>{navigate(`/search?query=${encodeURIComponent(tag?.name?.trim())}`);}}>#{tag?.name}</span>
               <span className="tag-count">{tag?.count}</span>
             </div>
           ))}
@@ -56,12 +55,5 @@ const Sidebar = () => {
   );
 };
 
-// Sidebar.propTypes = {
-//   popularTags: PropTypes.array
-// };
-
-// Sidebar.defaultProps = {
-//   popularTags: []
-// };
 
 export default Sidebar;

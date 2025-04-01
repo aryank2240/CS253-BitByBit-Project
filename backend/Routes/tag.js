@@ -1,7 +1,12 @@
 import express from 'express'
 const router = express.Router({ mergeParams: true });
-import { postTag,getTag,deleteTag,patchTag,removeTag,putTag,getPopularTags} from '../controllers/tag.js';
-import { protect , admin } from '../middleware/authMiddleware.js'
+import { postTag,getTag,deleteTag,patchTag,removeTag,putTag,getPopularTags, searchTags} from '../controllers/tag.js';
+import { protect } from '../middleware/authMiddleware.js'
+
+router.get("/search", async (req, res) => {
+  searchTags(req, res);
+});
+
 router.post("/post", protect, async (req, res) => {
   postTag(req, res);
 });

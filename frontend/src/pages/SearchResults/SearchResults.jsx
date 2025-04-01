@@ -8,19 +8,20 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import './SearchResults.css';
 import { IoReturnDownBackOutline } from "react-icons/io5";
 
+
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
+  const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [user, setUser] = useState(null);
-
-  // Get search query from URL
+  const [activeTab, setActiveTab] = useState('blogs');
   const query = searchParams.get('query') || '';
 
-  // Check authentication
+
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
 
@@ -46,7 +47,7 @@ const SearchResults = () => {
     }
   }, [navigate]);
 
-  // Perform search when query changes
+
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
@@ -55,7 +56,7 @@ const SearchResults = () => {
     }
 
     setSearchTerm(query);
-    
+
     const fetchResults = async () => {
       try {
         setLoading(true);
@@ -70,7 +71,6 @@ const SearchResults = () => {
       } catch (error) {
         console.error('Error searching blogs:', error);
         if (error.response && error.response.status === 404) {
-          // No results found is not an error
           setResults([]);
         } else {
           setError('An error occurred while searching. Please try again.');
@@ -83,6 +83,45 @@ const SearchResults = () => {
     fetchResults();
   }, [query]);
 
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setTags([]);
+      setLoading(false);
+      return;
+    }
+
+    setSearchTerm(query);
+
+    const fetchTagsResult = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`http://localhost:5000/api/tag/search?query=${encodeURIComponent(query)}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          }
+        });
+        setTags(response.data);
+
+        setError('');
+      } catch (error) {
+        console.error('Error searching tags:', error);
+        if (error.response && error.response.status === 404) {
+          setTags([]);
+        } else {
+          setError('An error occurred while searching. Please try again.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTagsResult();
+  }, [query]);
+
+
+
   // Handle new search
   const handleSearch = () => {
     if (searchTerm.trim()) {
@@ -92,27 +131,27 @@ const SearchResults = () => {
 
   return (
     <div className="search-results-container">
-   
+
       <header className="search-results-header">
-      
+
         <div className='search-results-header-left'>
-        <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
-        <div className="search-container">
-          
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search for blogs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          />
-          <button className="search-button" onClick={handleSearch}>
-            <FiSearch className="search-icon" />
-          </button>
+          <IoReturnDownBackOutline size={30} onClick={() => { window.history.back() }} style={{ cursor: 'pointer', }} />
+          <div className="search-container">
+
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search for blogs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e?.target?.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <button className="search-button" onClick={handleSearch}>
+              <FiSearch className="search-icon" />
+            </button>
+          </div>
         </div>
-        </div>
-      
+
 
         <div className="header-right">
           <button className="add-blog-button" onClick={() => navigate('/write')}>
@@ -127,35 +166,78 @@ const SearchResults = () => {
           </div>
         </div>
       </header>
-
+      <div className='header-content'>
+        {
+          <div className="navigation-tabs">
+            <button
+              className={`tab-button ${activeTab === 'blogs' ? 'active' : ''}`}
+              onClick={() => setActiveTab('blogs')}
+            >
+              Blogs
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'tags' ? 'active' : ''}`}
+              onClick={() => setActiveTab('tags')}
+            >
+              Tags
+            </button>
+          </div>
+        }
+      </div>
       <div className="search-results-main">
         <div className="search-results-column">
           <div className="search-results-info">
             <h2>Search Results for "{query}"</h2>
-            {!loading && results.length > 0 && (
-              <p>{results.length} result{results.length !== 1 ? 's' : ''} found</p>
-            )}
+            {!loading && results?.length > 0 && activeTab === 'blogs' ? (
+              <p>{results?.length} result{results?.length !== 1 ? 's' : ''} found</p>
+            ) : (<p>{tags?.length} result{tags?.length !== 1 ? 's' : ''} found</p>)}
           </div>
 
-          {loading ? (
-            <div className="search-loading">
-              <div className="loading-spinner"></div>
-              <p>Searching...</p>
-            </div>
-          ) : error ? (
-            <div className="search-error">{error}</div>
-          ) : results.length === 0 ? (
-            <div className="no-results">
-              <h3>No blogs found matching "{query}"</h3>
-              <p>Try different keywords or check your spelling.</p>
-            </div>
-          ) : (
-            results.map(blog => (
-              <div key={blog._id} className="blog-wrapper">
-                <Blog blogId={blog._id} />
+          {activeTab === "tags" ? (
+            loading ? (
+              <div className="search-loading">
+                <div className="loading-spinner"></div>
+                <p>Loading tags...</p>
               </div>
-            ))
+            ) : error ? (
+              <div className="search-error">{error}</div>
+            ) : tags.length === 0? (
+              <div className="no-results">
+                <h3>No blogs with the tag found matching "{query}"</h3>
+                <p>Try different keywords or check your spelling.</p>
+              </div>
+            ) : (
+              tags?.map(tag => (
+                tag?.blogs?.map(blog => (
+                  <div key={blog} className="blog-wrapper">
+                    <Blog blogId={blog} />
+                  </div>
+                )
+                )
+              ))
+            )
+          ) : (
+            loading ? (
+              <div className="search-loading">
+                <div className="loading-spinner"></div>
+                <p>Searching...</p>
+              </div>
+            ) : error ? (
+              <div className="search-error">{error}</div>
+            ) : results?.length === 0 ? (
+              <div className="no-results">
+                <h3>No blogs found matching "{query}"</h3>
+                <p>Try different keywords or check your spelling.</p>
+              </div>
+            ) : (
+              results.map(blog => (
+                <div key={blog?._id} className="blog-wrapper">
+                  <Blog blogId={blog?._id} />
+                </div>
+              ))
+            )
           )}
+
         </div>
 
         <Sidebar />
