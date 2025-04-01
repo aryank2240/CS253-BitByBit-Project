@@ -188,7 +188,7 @@ const SearchResults = () => {
         <div className="search-results-column">
           <div className="search-results-info">
             <h2>Search Results for "{query}"</h2>
-            {!loading && results?.length > 0 && activeTab === 'blogs' ? (
+            {!loading  && activeTab === 'blogs' ? (
               <p>{results?.length} result{results?.length !== 1 ? 's' : ''} found</p>
             ) : (<p>{tags?.length} result{tags?.length !== 1 ? 's' : ''} found</p>)}
           </div>
