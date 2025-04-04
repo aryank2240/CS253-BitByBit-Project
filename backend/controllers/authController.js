@@ -306,4 +306,101 @@ async function send2FAOTP(email, otp) {
   await transporter.sendMail(mailOptions);
 }
 
-export {register,login, verifyEmail, verify2FAAuthenticator, setup2FAAuthenticator }
+// Forgot Password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validate email domain
+    if (!email.endsWith('@iitk.ac.in')) {
+      return res.status(400).json({ message: 'Only IITK email domains (@iitk.ac.in) are allowed' });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found with this email' });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+    // Store hashed token in database
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = resetTokenExpiry;
+    await user.save();
+
+    // Create reset URL
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+    // For local development
+    const frontendResetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
+
+    // Send email with reset link
+    await sendPasswordResetEmail(email, frontendResetUrl);
+
+    res.status(200).json({ 
+      message: 'Password reset instructions sent to your email',
+      resetUrl: frontendResetUrl // Remove in final revision
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Error sending password reset email' });
+  }
+};
+
+// Reset Password
+const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    // Hash the token from the URL
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find user with this token and token not expired
+    const user = await User.findOne({ 
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Token is invalid or has expired' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    
+    // Clear reset token fields
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    
+    await user.save();
+
+    res.status(200).json({ message: 'Password has been reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Error resetting password' });
+  }
+};
+
+// Helper function to send password reset email
+async function sendPasswordResetEmail(email, resetUrl) {
+  const mailOptions = {
+    from: process.env.EMAIL_USERNAME,
+    to: email,
+    subject: 'IITK Blog - Password Reset',
+    html: `
+      <h1>Reset Your Password</h1>
+      <p>You requested a password reset. Please click the link below to reset your password:</p>
+      <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #6c63ff; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
+      <p>This link will expire in 30 minutes.</p>
+      <p>If you didn't request this, please ignore this email.</p>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+export {register,login, verifyEmail, verify2FAAuthenticator, setup2FAAuthenticator,  forgotPassword, resetPassword }

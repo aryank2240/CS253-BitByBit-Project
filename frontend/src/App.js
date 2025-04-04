@@ -12,6 +12,9 @@ import ProfilePage from "./pages/Profile/OwnProfile.jsx";
 import EmailVerification from "./pages/SignUP_and_Login/EmailVerification.jsx";
 import BlogWritingPage from "./pages/Blog-writing/BlogWriting.jsx"
 import SearchResults from "./pages/SearchResults/SearchResults.jsx";
+import ForgotPassword from "./pages/SignUP_and_Login/ForgotPassword.jsx";
+import ResetPassword from "./pages/SignUP_and_Login/ResetPassword.jsx";
+
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
         <Route path="/account/:id" element={<AccountProfilePage />} />
         <Route path="*" element={<h1><Error404 /></h1>} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </Router>
   );

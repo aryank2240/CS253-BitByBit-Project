@@ -69,6 +69,9 @@ const Login = () => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                     </div>
+                    <p className="forgot-password" style={{ textAlign: "right", margin: "5px 0" }}>
+                      <a href="/forgot-password" style={{ color: "#6c63ff" }}>Forgot password?</a>
+                    </p>
                   </div>
                   {error && <p style={{ color: "red" }}>{error}</p>}
                 {success && <p style={{ color: "green" }}>{success}</p>}
