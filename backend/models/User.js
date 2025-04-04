@@ -71,6 +71,7 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user',
   },
+
   // Email verification fields
   emailVerified: {
     type: Boolean,
@@ -80,6 +81,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
   },
   emailVerificationOTPExpiry: {
+    type: Date,
+  },
+  // Forgot and Reset passwords
+  passwordResetToken: {
+    type: String,
+  },
+  passwordResetExpires: {
     type: Date,
   },
   // Two-factor authentication fields
