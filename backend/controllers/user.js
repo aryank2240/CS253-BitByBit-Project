@@ -99,6 +99,7 @@ async function deleteUser(req, res) {
 
 
     const user = await User.findOneAndDelete({ _id: id });
+  
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json(user);
   }

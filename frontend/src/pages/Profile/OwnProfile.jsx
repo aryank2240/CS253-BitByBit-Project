@@ -150,7 +150,7 @@ const OwnProfilePage = () => {
           <input
             type="text"
             className="search-input"
-            placeholder="Search for blogs, friends"
+            placeholder="Search for blogs, tags"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}

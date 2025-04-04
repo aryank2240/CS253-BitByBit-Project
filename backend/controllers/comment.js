@@ -53,6 +53,16 @@ async function deleteComment(req, res) {
        if (!mongoose.Types.ObjectId.isValid(id)) {
          return res.status(400).json({ error: "Invalid blog ID" });
        }
+       await Blog.updateMany(
+        { comments: { $in: [id] } },
+        { $pull: { comments: id } },
+        { new: true }
+      );
+      await User.updateMany(
+        { comments: { $in: [id] } },
+        { $pull: { comments: id } },
+        { new: true }
+      );
        const comments = await Comment.findOneAndDelete({ _id: id });
        if (!comments) return res.status(404).json({ error: "Comment not found" });
        res.json(comments);

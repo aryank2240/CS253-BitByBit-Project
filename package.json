@@ -5,5 +5,8 @@
     "mime": "^4.0.6",
     "nodemailer": "^6.10.0",
     "speakeasy": "^2.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.1.1"
   }
 }

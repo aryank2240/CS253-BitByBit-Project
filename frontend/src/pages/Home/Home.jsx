@@ -3,7 +3,7 @@ import { FiSearch,  FiBookmark} from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { Ring2 } from 'ldrs/react'
+import Ring2  from 'ldrs/react'
 import 'ldrs/react/Ring2.css'
 
 
@@ -171,7 +171,7 @@ const Home = () => {
               <input
                 type="text"
                 className="search-input"
-                placeholder="Search for blogs, friends"
+                placeholder="Search for blogs, tags"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}

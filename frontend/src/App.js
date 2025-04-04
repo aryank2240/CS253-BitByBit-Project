@@ -19,7 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<Admin />} />
-        <Route path="/blog-edit" element={<BlogEditor />} />
+        <Route path="/edit-blog" element={<BlogEditor />} />
         <Route path="/blog/:id" element={<SingleBlogPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/user-profile" element={<ProfilePage />} />

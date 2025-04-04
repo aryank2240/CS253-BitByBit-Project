@@ -152,7 +152,15 @@
 .save-button.saved {
     color: #1a73e8;
 }
-
+.options-dropdown{
+    position: 'absolute';
+    top: '30px';
+    right: 0;
+    background: '#fff';
+    border: '1px solid #ccc';
+    border-radius: '4px';
+    box-shadow: "0px 4px 6px rgba(0,0,0,0.1)";
+  }
 .blog-actions {
     margin-top: 10px;
     padding-top: 10px;

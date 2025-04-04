@@ -14,6 +14,8 @@ router.put("/:id/saveBlogs", protect, async (req, res) => {
   SaveBlogs(req, res);
 });
 
+
+
 router.get("/:id/blogs", protect, async (req, res) => {
   getBlogsbyUser(req, res);
 });

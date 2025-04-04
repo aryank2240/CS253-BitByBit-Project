@@ -15,7 +15,6 @@ const Admin = () => {
   const [viewMode, setViewMode] = useState('default');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [actionType, setActionType] = useState(null);
-  const [selectedBlogId, setSelectedBlogId] = useState(null);
   const [warningMessage, setWarningMessage] = useState('');
   const [user,setUser]= useState('');
   const [blog, setBlog]= useState([]);
@@ -201,7 +200,7 @@ const Admin = () => {
               <input
                 type="text"
                 className="search-input"
-                placeholder="Search for blogs, users, tags"
+                placeholder="Search for blogs, tags"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}

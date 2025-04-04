@@ -8,7 +8,7 @@ import "react-quill/dist/quill.snow.css";
 
 const BlogEditor = () => {
   const location = useLocation();
-  const { blogId } = location.state || {};
+  const { blogId } = location?.state || {};
   const [formData, setFormData] = useState({
     title: "",
     visibility: "",
@@ -157,7 +157,7 @@ const BlogEditor = () => {
   return (
     <div className="blog-writer-container">
       <header className="blog-writer-header">
-        <div className="blog-writer-title">Build Your Blog ✏️</div>
+        <div className="blog-writer-title">Edit Your Blog ✏️</div>
         <div className="blog-writer-header-controls">
           <button className="blog-writer-publish-btn" onClick={handlePublish} style={{ cursor: "pointer" }}>
             Update

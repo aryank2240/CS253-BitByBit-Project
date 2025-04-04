@@ -6,109 +6,146 @@ import Comment from './../models/Comment.js'
 import mongoose from 'mongoose';
 
 
-async function createBlog(req , res){
-    try {
-        const newBlog = req.body;
-        const user = await User.findOne({ _id: newBlog.author });
-        if (!user) return res.status(404).json({ error: "User not found" });
-        console.log(user);
-        user.blogCount=user.blogCount+1;
-        const blog = new Blog(newBlog);
-        await blog.save();
-        user.Blogs.push(blog._id);
-        await user.save();
+async function createBlog(req, res) {
+  try {
+    const newBlog = req.body;
+    const user = await User.findOne({ _id: newBlog.author });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    console.log(user);
+    user.blogCount = user.blogCount + 1;
+    const blog = new Blog(newBlog);
+    await blog.save();
+    user.Blogs.push(blog._id);
+    await user.save();
 
-        res.json(blog);
+    res.json(blog);
 
-      }
-      catch (err) {
-    
-        res.status(500).json({ error: err });
-        // console.log(err); // Consider using a proper logging mechanism
+  }
+  catch (err) {
+
+    res.status(500).json({ error: err });
+    // console.log(err); // Consider using a proper logging mechanism
+  }
+}
+
+
+async function getTopBlogs(req, res) {
+  try {
+    const blogs = await Blog.find().sort({ Upvote: -1 }).limit(8);
+    if (blogs.length === 0) return res.status(404).json({ error: "No blogs found" });
+    res.json(blogs);
+  }
+  catch (err) {
+    res.status(500).json({ error: err });
+    console.log(err);
+  }
+}
+
+
+async function getBlog(req, res) {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blog ID" });
     }
+    const blogs = await Blog.findOne({ _id: id });
+    if (!blogs) return res.status(404).json({ error: "Blog not found" });
+    return res.json(blogs);
+  }
+  catch (err) {
+    res.status(500).json({ error: err });
+    console.log(err);
+  }
 }
 
-
-async function getTopBlogs(req , res){
-    try {
-        const blogs = await Blog.find().sort({Upvote: -1}).limit(8);
-        if (blogs.length === 0) return res.status(404).json({ error: "No blogs found" });
-        res.json(blogs); 
-      }
-      catch (err) {
-        res.status(500).json({ error: err });
-        console.log(err);
-      }
-}
-
-
-async function getBlog(req , res){
-     try {
-        const id = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).json({ error: "Invalid blog ID" });
-        }
-        const blogs = await Blog.findOne({ _id: id });
-        if (!blogs) return res.status(404).json({ error: "Blog not found" });
-        return res.json(blogs);
-      }
-      catch (err) {
-        res.status(500).json({ error: err });
-        console.log(err);
-      }
-}
-
-async function deleteBlog(req , res){
-     try {
-        const id = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).json({ error: "Invalid blog ID" });
-        }
-        
-        const user = await User.findOne({ _id: newBlog.author });
-        user.blogCount= user.blogCount - 1;
-        user.save();
-        await User.updateMany({ Blogs: { $in: [id] } }, { $pull: { Blogs: id } },{ new: true } );
-        await Tag.updateMany({ blogs: { $in: [id] } }, { $pull: { blogs: id } });
-        await Comment.deleteMany({ ParentBlogId: id });
-        const blogs = await Blog.findOneAndDelete({ _id: id });
-        if (!blogs) return res.status(404).json({ error: "Blog not found" });
-        res.json(blogs);
-      }
-      catch (err) {
-        res.status(500).json({ error: err });
-        console.log(err);
-      }
-}
-
-async function updateBlog(req , res){
-    try {
+async function deleteBlog(req, res) {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blog ID" });
+    }
     
-        const id = req.params.id;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).json({ error: "Invalid blog ID" });
-        }
-        const blogs = await Blog.findOneAndUpdate({ _id: id }, { $set: req.body }, { new: true, runValidators: true });
-        if (!blogs) return res.status(404).json({ error: "Blog not found" });
-        res.json(blogs);
-      }
-      catch (err) {
-        res.status(500).json({ error: err });
-        console.log(err);
-      }
+    const blogToDelete = await Blog.findById(id);
+    if (!blogToDelete) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+    
+    const authorId = blogToDelete.author;
+    const authorUser = await User.findById(authorId);
+    if (authorUser) {
+      authorUser.blogCount = Math.max(0, authorUser.blogCount - 1);
+      await authorUser.save();
+    }
+    
+    
+    await User.updateMany(
+      { Blogs: { $in: [id] } },
+      { $pull: { Blogs: id } },
+      { new: true }
+    );
+    
+    await User.updateMany(
+      { SavedBlogs: { $in: [id] } },
+      { $pull: { SavedBlogs: id } },
+      { new: true }
+    );
+    
+
+    await User.updateMany(
+      { likedBlogs: { $in: [id] } },
+      { $pull: { likedBlogs: id } }, 
+      { new: true }
+    );
+    
+    await Tag.updateMany(
+      { blogs: { $in: [id] } },
+      { $pull: { blogs: id }, $inc: { count: -1 } }
+    );
+    
+    await Comment.deleteMany({ ParentBlogId: id });
+    
+  
+    const deletedBlog = await Blog.findOneAndDelete({ _id: id });
+    if (!deletedBlog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+    
+    res.json(deletedBlog);
+  }
+  catch (err) {
+    res.status(500).json({ error: err });
+    console.log(err);
+  }
+}
+
+async function updateBlog(req, res) {
+  try {
+
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blog ID" });
+    }
+    const blogs = await Blog.findOneAndUpdate({ _id: id }, { $set: req.body }, { new: true, runValidators: true });
+    if (!blogs) return res.status(404).json({ error: "Blog not found" });
+    res.json(blogs);
+  }
+  catch (err) {
+    res.status(500).json({ error: err });
+    console.log(err);
+  }
 }
 
 async function searchBlogs(req, res) {
   try {
     const { query } = req.query;
-    
+
     if (!query || query.trim() === '') {
       return res.status(400).json({ error: "Search query is required" });
     }
-    
+
     // Create a regex search pattern that is case insensitive
     const searchPattern = new RegExp(query, 'i');
-    
+
     // Search in title, content, and author_name
     const blogs = await Blog.find({
       $or: [
@@ -117,11 +154,11 @@ async function searchBlogs(req, res) {
         { author_name: searchPattern }
       ]
     }).sort({ CreatedAt: -1 }); // Sort by newest first
-    
+
     if (!blogs || blogs.length === 0) {
       return res.status(404).json({ message: "No blogs found matching your search" });
     }
-    
+
     res.json(blogs);
   } catch (error) {
     console.error("Error searching blogs:", error);
@@ -191,15 +228,15 @@ async function addCommentOrTags(req, res) {
   }
 }
 
-async function getReportedBlogs(req,res){
-  try{
+async function getReportedBlogs(req, res) {
+  try {
     const reportedBlogs = await Blog.find({ ReportCount: { $gt: 1 } });
-    if(!reportedBlogs) res.status(404).json({error:"No Reported Blogs found"});
+    if (!reportedBlogs) res.status(404).json({ error: "No Reported Blogs found" });
     res.json(reportedBlogs);
   }
-  catch(err){
+  catch (err) {
     console.error("Error in getReportedBlogs:", err);
-    res.status(500).json({error:"Internal Server Error"});
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
@@ -209,14 +246,14 @@ async function getCommentsForBlog(req, res) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid blog ID" });
     }
-    
+
     // Fix: Use ParentBlogId instead of blog, and populate the UserId to get user details
     const comments = await Comment.find({ ParentBlogId: id }).populate('UserId', 'name');
-    
+
     if (!comments || comments.length === 0) {
       return res.status(404).json({ message: "No comments for this blog" });
     }
-    
+
     // Return the comments as JSON response
     res.json(comments);
   } catch (error) {
@@ -226,22 +263,22 @@ async function getCommentsForBlog(req, res) {
   }
 }
 
-const getTagForBlog = async (req,res) => {
+const getTagForBlog = async (req, res) => {
   try {
-    const { id } =req.params;
+    const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid blog ID" });
     }
     const tags = await Tag.find({ blogs: id }); // Find all comments linked to blogId
     if (tags.length === 0) {
-    
+
       return res.status(404).json({ message: "No tags for this blog" });
-     
+
     }
     res.json(tags); // Send tags as response
   } catch (error) {
     console.error("Error fetching tags:", error);
-    res.status(500).json({ message: "Internal server error",error });
+    res.status(500).json({ message: "Internal server error", error });
   }
 };
 
@@ -250,7 +287,7 @@ const getTagForBlog = async (req,res) => {
 const upvoteBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const blogId=id;
+    const blogId = id;
     const userId = req.body.userId;
 
     // Find the blog document with the given blogId
@@ -274,7 +311,7 @@ const upvoteBlog = async (req, res) => {
         blog.downvoters.pull(userId);
       }
     }
-    
+
     // Update count fields based on the lengths of the arrays
     blog.Upvote = blog.upvoters.length;
     blog.Downvote = blog.downvoters.length;
@@ -303,10 +340,10 @@ const upvoteBlog = async (req, res) => {
 };
 
 // Downvote controller function
- const downvoteBlog = async (req, res) => {
+const downvoteBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const blogId= id;
+    const blogId = id;
     const userId = req.body.userId;
 
     // Find the blog document
@@ -330,7 +367,7 @@ const upvoteBlog = async (req, res) => {
         blog.upvoters.pull(userId);
       }
     }
-    
+
     // Update count fields accordingly
     blog.Upvote = blog.upvoters.length;
     blog.Downvote = blog.downvoters.length;
@@ -353,6 +390,6 @@ const upvoteBlog = async (req, res) => {
 
 
 export {
-  createBlog, getTopBlogs, getBlog, deleteBlog, updateBlog, addCommentOrTags, 
+  createBlog, getTopBlogs, getBlog, deleteBlog, updateBlog, addCommentOrTags,
   getReportedBlogs, getCommentsForBlog, getTagForBlog, upvoteBlog, downvoteBlog, searchBlogs
 }
