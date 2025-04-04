@@ -3,13 +3,14 @@ import { FiSearch,  FiBookmark} from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import Ring2  from 'ldrs/react'
+import {Ring2}  from 'ldrs/react'
 import 'ldrs/react/Ring2.css'
 
 
 import './Home.css';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+
 
 const Home = () => {
   const navigate = useNavigate();
