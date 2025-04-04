@@ -2,6 +2,7 @@ import express from 'express'
 const router = express.Router({ mergeParams: true });
 import { register, login, verifyEmail, verify2FAAuthenticator, setup2FAAuthenticator} from '../controllers/authController.js';
 import { protect , admin } from '../middleware/authMiddleware.js'
+import { forgotPassword, resetPassword } from '../controllers/authController.js';
 
 // Public routes
 router.post('/register',async (req , res) =>{
@@ -15,6 +16,13 @@ router.post('/verify-email', async (req , res) =>{
 });
 router.post('/verify-2fa', async (req , res) =>{
   verify2FAAuthenticator(req,res);
+});
+router.post('/forgot-password', async (req, res) => {
+  forgotPassword(req, res);
+});
+
+router.post('/reset-password', async (req, res) => {
+  resetPassword(req, res);
 });
 
 // Protected routes (require authentication)
