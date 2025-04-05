@@ -83,6 +83,7 @@ async function getUser(req, res) {
 async function deleteUser(req, res) {
   try {
     const id = req.params.id;
+    
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid user ID" });
     }
@@ -112,12 +113,16 @@ async function deleteUser(req, res) {
 async function updateUser(req, res) {
   try {
     const id = req.params.id;
+    const reqSender= req.user;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid user ID" });
     }
    
     const user = await User.findOneAndUpdate({ _id: id }, { $set: req.body }, { new: true, runValidators: true });
     if (!user) return res.status(404).json({ error: "User not found" });
+    if(reqSender?._id!==user?._id&& reqSender?.role==='user'){
+      return res.status(401).json({ message: 'Not authorized, no token' });
+    }
     res.json(user);
   }
   catch (err) {
@@ -132,7 +137,7 @@ async function loginUser(req, res) {
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
-    console.log(user);
+  
   if(!password){ return res.status(404).json({message: "Password missing."})}
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
@@ -157,6 +162,9 @@ async function SaveBlogs(req, res) {
     const user = await User.findOne({ _id: id });
     if (!user) return res.status(404).json({ error: "User not found" });
     const blog_id = req.body.blogId;
+    if (!mongoose.Types.ObjectId.isValid(blog_id)) {
+      return res.status(400).json({ error: "Invalid blog ID" });
+    }
     const blog = await Blog.findOne({_id:blog_id})
     if(!blog) return res.status(404).json({ error: "Blog not found" });
     blog.SavedBy.push(user._id)
@@ -194,7 +202,7 @@ async function getBlogsbyFollowedUsers(req, res) {
 async function getSavedBlogs(req , res){
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
+    const user = await User.findOne({_id:id});
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const blogs = await Blog.find({ _id: { $in: user.SavedBlogs } });
@@ -223,6 +231,9 @@ async function followUsers(req, res) {
 
     if (!currentUser || !targetUser) {
       return res.status(404).json({ error: "User not found" });
+    }
+    if(targetUser === currentUser){
+      return res.status(401).json({error:"You can't follow yourself"})
     }
 
     // Check if already following

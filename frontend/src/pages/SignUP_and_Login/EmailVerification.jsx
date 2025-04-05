@@ -56,6 +56,7 @@ const EmailVerification = () => {
                         />
                         </div>
                       </div>
+                      {error && <p style={{ color: "red" }}>{error}</p>}
                       <button type="submit" className="submit-button">
                       {loading ? 'Verifying...' : 'Verify Email'}
                       </button>

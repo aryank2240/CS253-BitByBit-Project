@@ -4,43 +4,46 @@ import mongoose from 'mongoose'
 
 async function postTag(req, res) {
   try {
-    const { name, blogs } = req.body;
-
+    const { name,blogs } = req.body;
 
     if (!name || !blogs) {
       return res.status(400).json({ error: "Missing required fields" });
     }
+    // Find the blog
+    const blog = await Blog.findById(blogs);
+    if (!blog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
 
-
-    const blog = await Blog.findOne({ _id: blogs });
-    if (!blog) return res.status(404).json({ error: "Blog not found" });
-
+    // Find or create the tag
     let tag = await Tag.findOne({ name });
 
     if (tag) {
-
       tag.count += 1;
-      await tag.save();
+      tag.blogs.push(blog?.id);
     } else {
-      // If the tag does not exist, create a new one
-      tag = new Tag({ name, count: 1, blogs });
-      await tag.save();
+      tag = new Tag({ name, count: 1, blogs: [blogs] });
     }
 
+    // Save the tag first (if new or updated)
+    await tag.save();
+
+    // Initialize blog.tags if not present
     blog.tags = blog.tags || [];
+
+    // Only add tag if it's not already associated
     if (!blog.tags.includes(tag._id)) {
       blog.tags.push(tag._id);
       await blog.save();
     }
 
-    // Send response with the updated/created tag
-    res.json(tag);
+    res.status(200).json({ message: "Tag added to blog", tag });
   } catch (err) {
-
-    console.error(err);
+    console.error("postTag error:", err);
     res.status(500).json({ error: err.message });
   }
 }
+
 
 
 

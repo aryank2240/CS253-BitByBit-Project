@@ -56,15 +56,16 @@ const Admin = () => {
 
   
     useEffect(() => {
+      if(!user){return;}
       const fetchSavedBlog = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/user/${user._id}/SavedBlogs`, {
+          const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/SavedBlogs`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
           }).then((res) => {
-            setSavedBlogs(res.data);
+            setSavedBlogs(res?.data);
           });
         } catch (error) {
           console.error("Error fetching saved blogs:", error);
@@ -83,7 +84,7 @@ const Admin = () => {
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
           }).then((res) => {
-            setBlog(res.data);
+            setBlog(res?.data);
 
           });
         } catch (error) {
@@ -103,7 +104,7 @@ const Admin = () => {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         }).then((res) => {
-
+          window.location.reload();
         });
       } catch (error) {
         console.error('Error fetching blogs:', error);
@@ -119,7 +120,7 @@ const Admin = () => {
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
             }
           }).then((res) => {
-            setReportedBlogs(res.data);
+            setReportedBlogs(res?.data);
           });
         } catch (error) {
           console.error('Error fetching Reported blogs:', error);
@@ -131,15 +132,16 @@ const Admin = () => {
     }, []);
     
     useEffect(() => {
+      if(!user){return;}
         const fetchFollowedBlogs = async () => {
           try {
-            const response = await axios.get(`http://localhost:5000/api/user/${user._id}/followedBlogs`, {
+            const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/followedBlogs`, {
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
               }
             });
-            setFollowedBlogs(response.data);
+            setFollowedBlogs(response?.data);
           } catch (error) {
             console.error("Error fetching followed blogs:", error);
           }
@@ -186,16 +188,18 @@ const Admin = () => {
   return (
     <div className="admin-container">
       {/* Admin Badge */}
-      <div className="admin-badge">
-        Admin Dashboard
-      </div>
+     
 
       {/* Header Section */}
       <header className="header-content">
         <div className="header-main-row">
           <div className="search-add-container">
-                              <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
-            
+            <div id="back-admin">
+            <IoReturnDownBackOutline  size={30} onClick={()=>{navigate('/')}} style={{cursor:'pointer',}}/>
+            Go to home
+            </div>
+                             
+           
             <div className="search-container">
               <input
                 type="text"
@@ -210,7 +214,9 @@ const Admin = () => {
               </button>
             </div>
           </div>
-
+          <div className="admin-badge">
+        Admin Dashboard
+      </div>
           <div className="header-right">
             <div className="header-icons">
               <button 

@@ -42,7 +42,8 @@ const Home = () => {
         localStorage.removeItem("jwtToken");
         navigate("/login");
       } else {
-        setUser(decoded); // Ensure this contains the expected fields
+        setUser(decoded);
+         // Ensure this contains the expected fields
       }
     } catch (error) {
       console.error("Invalid token:", error);
@@ -58,13 +59,13 @@ const Home = () => {
   useEffect(() => {
     const fetchSavedBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/SavedBlogs`, {
+        const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/SavedBlogs`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         });
-        setSavedBlogs(response.data);
+        setSavedBlogs(response?.data);
       } catch (error) {
         console.error("Error fetching saved blogs:", error);
       }
@@ -83,7 +84,7 @@ const Home = () => {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         }).then((res) => {
-          setBlogs(res.data);
+          setBlogs(res?.data);
         });
       } catch (error) {
         console.error('Error fetching blogs:', error);
@@ -106,13 +107,13 @@ const Home = () => {
   useEffect(() => {
     const fetchFollowedBlogs = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/followedBlogs`, {
+        const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/followedBlogs`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         });
-        setFollowedBlogs(response.data);
+        setFollowedBlogs(response?.data);
       } catch (error) {
         console.error("Error fetching followed blogs:", error);
       }

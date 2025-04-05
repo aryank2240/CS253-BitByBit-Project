@@ -26,11 +26,16 @@ const Login = () => {
                 }
             );
             
-            const { token } = response.data;
+            const { token , user} = response.data;
             localStorage.setItem("jwtToken", token);
             setSuccess("Login successful! Redirecting...");
+            if(user?.role==='admin'){
+              setTimeout(() => navigate("/admin"), 2000);
+            }
+            else{
+              setTimeout(() => navigate("/"), 2000); // Redirect after 2s
+            }
             
-            setTimeout(() => navigate("/"), 2000); // Redirect after 2s
         } catch (error) {
             console.error("Login Error:", error.response?.message || error.message);
             setError(error.response?.data?.message || "Invalid email or password");

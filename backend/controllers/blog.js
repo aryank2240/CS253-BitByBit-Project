@@ -61,6 +61,7 @@ async function getBlog(req, res) {
 async function deleteBlog(req, res) {
   try {
     const id = req.params.id;
+    const reqSender=req.user;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid blog ID" });
     }
@@ -72,6 +73,12 @@ async function deleteBlog(req, res) {
     
     const authorId = blogToDelete.author;
     const authorUser = await User.findById(authorId);
+    if (!authorUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    if(reqSender?._id!==authorUser?._id){
+      return res.status(401).json({ error: "You are not authorised to delete this blog" });
+    }
     if (authorUser) {
       authorUser.blogCount = Math.max(0, authorUser.blogCount - 1);
       await authorUser.save();
@@ -230,7 +237,7 @@ async function addCommentOrTags(req, res) {
 
 async function getReportedBlogs(req, res) {
   try {
-    const reportedBlogs = await Blog.find({ ReportCount: { $gt: 1 } });
+    const reportedBlogs = await Blog.find({ ReportCount: { $gt: 0 } });
     if (!reportedBlogs) res.status(404).json({ error: "No Reported Blogs found" });
     res.json(reportedBlogs);
   }
@@ -272,7 +279,6 @@ const getTagForBlog = async (req, res) => {
     const tags = await Tag.find({ blogs: id }); // Find all comments linked to blogId
     if (tags.length === 0) {
 
-      return res.status(404).json({ message: "No tags for this blog" });
 
     }
     res.json(tags); // Send tags as response

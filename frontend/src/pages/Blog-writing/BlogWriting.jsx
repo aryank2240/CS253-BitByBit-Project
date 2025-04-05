@@ -53,7 +53,7 @@ const BlogWritingPage = () => {
             if (!Array.isArray(tags) || tags.length === 0) return;
     
             const promises = tags.map((name) =>
-                axios.post(`http://localhost:5000/api/tag/post`, { name , count, blogs }, {
+                axios.post(`http://localhost:5000/api/tag/post`, { name ,  blogs }, {
                   headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
