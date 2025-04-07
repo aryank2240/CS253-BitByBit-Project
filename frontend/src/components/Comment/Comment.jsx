@@ -45,7 +45,7 @@ const Comment = ({ comment, updateComments }) => {
         return;
       }
       
-      await axios.patch(`http://localhost:5000/api/comment/${comment._id}`, {
+      await axios.patch(`api/comment/${comment._id}`, {
         content: editContent
       }, {
         headers: {
@@ -70,7 +70,7 @@ const Comment = ({ comment, updateComments }) => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this comment?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/comment/${comment._id}`, {
+        await axios.delete(`api/comment/${comment._id}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`

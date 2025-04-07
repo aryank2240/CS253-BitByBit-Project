@@ -59,7 +59,7 @@ const Admin = () => {
       if(!user){return;}
       const fetchSavedBlog = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/SavedBlogs`, {
+          const response = await axios.get(`api/user/${user?.id}/SavedBlogs`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -78,7 +78,7 @@ const Admin = () => {
     useEffect(() => {
       const fetchBlogs = async () => {
         try {
-          const response = await axios.get('http://localhost:5000/api/blog/home', {
+          const response = await axios.get('api/blog/home', {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -98,7 +98,7 @@ const Admin = () => {
 
     async function removeBlog(blogId){
       try{
-        const response = await axios.delete(`http://localhost:5000/api/blog/${blogId}`, {
+        const response = await axios.delete(`api/blog/${blogId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -114,7 +114,7 @@ const Admin = () => {
     useEffect(() => {
       const fetchReportedBlogs = async () => {
         try {
-           await axios.get('http://localhost:5000/api/blog/reported', {
+           await axios.get('api/blog/reported', {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -135,7 +135,7 @@ const Admin = () => {
       if(!user){return;}
         const fetchFollowedBlogs = async () => {
           try {
-            const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/followedBlogs`, {
+            const response = await axios.get(`api/user/${user?.id}/followedBlogs`, {
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`

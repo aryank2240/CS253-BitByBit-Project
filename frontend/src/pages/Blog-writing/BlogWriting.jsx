@@ -53,7 +53,7 @@ const BlogWritingPage = () => {
             if (!Array.isArray(tags) || tags.length === 0) return;
     
             const promises = tags.map((name) =>
-                axios.post(`http://localhost:5000/api/tag/post`, { name ,  blogs }, {
+                axios.post(`api/tag/post`, { name ,  blogs }, {
                   headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -67,6 +67,7 @@ const BlogWritingPage = () => {
             console.error(err.response?.data?.message || err.message || "Something went wrong");
         }
     };
+    
     
       const modules = {
         toolbar: [
@@ -134,7 +135,7 @@ const BlogWritingPage = () => {
                 return;
             }
     
-            const res = await axios.post(`http://localhost:5000/api/blog/post`, {
+            const res = await axios.post(`api/blog/post`, {
                 author,
                 author_name,
                 content,

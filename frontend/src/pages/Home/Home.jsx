@@ -57,9 +57,10 @@ const Home = () => {
 
 
   useEffect(() => {
+    if(!user){return;}
     const fetchSavedBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/SavedBlogs`, {
+        const response = await axios.get(`api/user/${user?.id}/SavedBlogs`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -78,7 +79,7 @@ const Home = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/blog/home', {
+        const response = await axios.get('api/blog/home', {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -107,7 +108,7 @@ const Home = () => {
   useEffect(() => {
     const fetchFollowedBlogs = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/followedBlogs`, {
+        const response = await axios.get(`api/user/${user?.id}/followedBlogs`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`

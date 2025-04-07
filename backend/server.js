@@ -21,6 +21,7 @@ app.use('/api/blog', blog);
 app.use('/api/user', user);
 app.use('/api/tag', tag);
 app.use('/api/comment', comment);
+
 app.use('/api/auth',auth);
 
 

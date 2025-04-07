@@ -60,7 +60,7 @@ const SearchResults = () => {
     const fetchResults = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/blog/search?query=${encodeURIComponent(query)}`, {
+        const response = await axios.get(`api/blog/search?query=${encodeURIComponent(query)}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -96,7 +96,7 @@ const SearchResults = () => {
     const fetchTagsResult = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/tag/search?query=${encodeURIComponent(query)}`, {
+        const response = await axios.get(`api/tag/search?query=${encodeURIComponent(query)}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`

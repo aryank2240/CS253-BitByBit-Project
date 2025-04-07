@@ -201,8 +201,8 @@ async function getBlogsbyFollowedUsers(req, res) {
 
 async function getSavedBlogs(req , res){
   try {
-    const { id } = req.params;
-    const user = await User.findOne({_id:id});
+    const id = req.params.id;
+    const user = await User.findById(id);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const blogs = await Blog.find({ _id: { $in: user.SavedBlogs } });

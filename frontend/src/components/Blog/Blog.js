@@ -23,11 +23,21 @@ const Blog = ({ blogId }) => {
     (html.trim().match(/<(\w+)[^>]*>.*?<\/\1>/s) || [html])[0];
 
   // Function: Save blog to user's saved blogs
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  };
+  
+  
   const saveBlogToUser = async (blogId) => {
     if (!user || !blogId) return;
     try {
       await axios.put(
-        `http://localhost:5000/api/user/${user?.id}/saveBlogs`,
+        `api/user/${user?.id}/saveBlogs`,
         { blogId },
         {
           headers: {
@@ -59,7 +69,7 @@ const Blog = ({ blogId }) => {
   // Delete blog and refresh the page afterward
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/blog/${blogId}`, {
+      await axios.delete(`api/blog/${blogId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -85,7 +95,7 @@ const Blog = ({ blogId }) => {
       const updatedReportCount = (blog?.ReportCount || 0) + 1;
   
       await axios.patch(
-        `http://localhost:5000/api/blog/${blogId}`,
+        `api/blog/${blogId}`,
         { ReportCount: updatedReportCount },
         {
           headers: {
@@ -110,7 +120,7 @@ const Blog = ({ blogId }) => {
       if (!blog) return;
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/user/${blog?.author}`,
+          `api/user/${blog?.author}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -154,7 +164,7 @@ const Blog = ({ blogId }) => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/blog/${blogId}`,
+          `api/blog/${blogId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -177,7 +187,7 @@ const Blog = ({ blogId }) => {
     const fetchTags = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/blog/tag/${blogId}`,
+          `api/blog/tag/${blogId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -295,7 +305,7 @@ const Blog = ({ blogId }) => {
         <div className="author-details">
           <h3 className="author-name">{blog?.author_name}</h3>
           <p className="author-role">{blog?.role}</p>
-          <div className="post-time">{blog?.CreatedAt}</div>
+          <div className="post-time">{ new Date(blog?.CreatedAt).toLocaleString("en-US", options).replace(",", " ·")}</div>
         </div>
       </div>
 

@@ -21,7 +21,7 @@ const OwnProfilePage = () => {
       if(!user) return
       const getAccount= async ()=>{
           try{
-              const res = await axios.get(`http://localhost:5000/api/user/${user?.id}`, {
+              const res = await axios.get(`api/user/${user?.id}`, {
                 headers: {
                   'Content-Type': 'application/json',
                   'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -74,7 +74,7 @@ const OwnProfilePage = () => {
   const editUser = async (e) => {
     try {
       if (!user) return;
-      const res = axios.patch(`http://localhost:5000/api/user/${user.id}`,
+      const res = axios.patch(`api/user/${user.id}`,
         {
           name
         }, {
@@ -97,7 +97,7 @@ const OwnProfilePage = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/${user.id}/blogs`, {
+          `api/user/${user.id}/blogs`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
