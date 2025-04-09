@@ -11,7 +11,7 @@ const CommentList = ({ blogId, newComment }) => {
   const fetchComments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`api/blog/comments/${blogId}`
+      const response = await axios.get(`http://localhost:5000/api/blog/comments/${blogId}`
         , {
           headers: {
             'Content-Type': 'application/json',

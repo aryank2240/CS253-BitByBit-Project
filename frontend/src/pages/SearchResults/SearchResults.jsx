@@ -7,6 +7,7 @@ import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import './SearchResults.css';
 import { IoReturnDownBackOutline } from "react-icons/io5";
+import { use } from 'react';
 
 
 const SearchResults = () => {
@@ -20,7 +21,14 @@ const SearchResults = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('blogs');
   const query = searchParams.get('query') || '';
+  const  [totalTagBlogs,setTotalTagBlogs] = useState(0); 
 
+  useEffect(() => {
+    if (!tags) return;
+    const total = tags.reduce((acc, tag) => acc + (tag?.count || 0), 0);
+    setTotalTagBlogs(total);
+  }, [tags]);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
@@ -60,7 +68,7 @@ const SearchResults = () => {
     const fetchResults = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`api/blog/search?query=${encodeURIComponent(query)}`, {
+        const response = await axios.get(`http://localhost:5000/api/blog/search?query=${encodeURIComponent(query)}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -96,7 +104,7 @@ const SearchResults = () => {
     const fetchTagsResult = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`api/tag/search?query=${encodeURIComponent(query)}`, {
+        const response = await axios.get(`http://localhost:5000/api/tag/search?query=${encodeURIComponent(query)}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -190,7 +198,7 @@ const SearchResults = () => {
             <h2>Search Results for "{query}"</h2>
             {!loading  && activeTab === 'blogs' ? (
               <p>{results?.length} result{results?.length !== 1 ? 's' : ''} found</p>
-            ) : (<p>{tags?.length} result{tags?.length !== 1 ? 's' : ''} found</p>)}
+            ) : (<p>{totalTagBlogs} result{tags?.length !== 1 ? 's' : ''} found</p>)}
           </div>
 
           {activeTab === "tags" ? (

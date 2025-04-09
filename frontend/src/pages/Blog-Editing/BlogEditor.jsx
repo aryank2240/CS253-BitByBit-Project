@@ -49,7 +49,7 @@ const BlogEditor = () => {
 
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`api/blog/${blogId}`, {
+        const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -133,7 +133,7 @@ const BlogEditor = () => {
       }
 
       await axios.patch(
-        `api/blog/${blogId}`,
+        `http://localhost:5000/api/blog/${blogId}`,
         {
           author,
           author_name,

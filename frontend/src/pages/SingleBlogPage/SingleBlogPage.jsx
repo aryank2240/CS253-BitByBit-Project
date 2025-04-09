@@ -35,7 +35,7 @@ const SingleBlogPage = () => {
     const fetchAuthor = async () => {
       if (!blog) return
       try {
-        const response = await axios.get(`api/user/${blog?.author}`, {
+        const response = await axios.get(`http://localhost:5000/api/user/${blog?.author}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -59,7 +59,7 @@ const SingleBlogPage = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await axios.get(`api/blog/tag/${blogId}`, {
+        const response = await axios.get(`http://localhost:5000/api/blog/tag/${blogId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -112,7 +112,7 @@ const SingleBlogPage = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`api/blog/${blogId}`, {
+        const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -145,7 +145,7 @@ const SingleBlogPage = () => {
       const content = comment;
       const ParentBlogId = blogId;
       const UserId = user?.id;
-      const res = await axios.post(`api/comment/post`, {
+      const res = await axios.post(`http://localhost:5000/api/comment/post`, {
         content,
         ParentBlogId,
         UserId
@@ -169,7 +169,7 @@ const SingleBlogPage = () => {
   const SaveBlogs = async () => {
     if (isSaved) { return; }
     try {
-      await axios.put(`api/user/${user.id}/saveBlogs`,
+      await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
         { blogId }, {
             headers: {
               'Content-Type': 'application/json',

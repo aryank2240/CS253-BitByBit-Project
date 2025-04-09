@@ -9,13 +9,11 @@ async function postTag(req, res) {
     if (!name || !blogs) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    // Find the blog
     const blog = await Blog.findById(blogs);
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
     }
 
-    // Find or create the tag
     let tag = await Tag.findOne({ name });
 
     if (tag) {
@@ -25,13 +23,9 @@ async function postTag(req, res) {
       tag = new Tag({ name, count: 1, blogs: [blogs] });
     }
 
-    // Save the tag first (if new or updated)
     await tag.save();
-
-    // Initialize blog.tags if not present
     blog.tags = blog.tags || [];
 
-    // Only add tag if it's not already associated
     if (!blog.tags.includes(tag._id)) {
       blog.tags.push(tag._id);
       await blog.save();

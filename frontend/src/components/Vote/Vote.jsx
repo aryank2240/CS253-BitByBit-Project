@@ -13,7 +13,7 @@ function VoteComponent({ blogId, userId }) {
     useEffect(() => {
         const fetchVoteData = async () => {
             try {
-                const response = await axios.get(`api/blog/${blogId}`, {
+                const response = await axios.get(`http://localhost:5000/api/blog/${blogId}`, {
                     headers: {
                       'Content-Type': 'application/json',
                       'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -42,7 +42,7 @@ function VoteComponent({ blogId, userId }) {
         }
 
         try {
-            const endpoint = `api/blog/${blogId}/${voteType}`;
+            const endpoint = `http://localhost:5000/api/blog/${blogId}/${voteType}`;
             const response = await axios.patch(endpoint, {userId}, {
                 headers: {
                   'Content-Type': 'application/json',

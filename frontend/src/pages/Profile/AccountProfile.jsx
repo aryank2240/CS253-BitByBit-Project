@@ -28,7 +28,7 @@ const AccountProfilePage = () => {
     setLoading(true);
     try {
       const res = await axios.put(
-        `api/user/${user?.id}/follow`,
+        `http://localhost:5000/api/user/${user?.id}/follow`,
         { accountId }, {
           headers: {
             'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const AccountProfilePage = () => {
     const getAccount = async () => {
       try {
         const res = await axios.get(
-          `api/user/${accountId}`, {
+          `http://localhost:5000/api/user/${accountId}`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -109,7 +109,7 @@ const AccountProfilePage = () => {
       if (!account) return;
       try {
         const res = await axios.get(
-          `api/user/${accountId}/blogs`, {
+          `http://localhost:5000/api/user/${accountId}/blogs`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
