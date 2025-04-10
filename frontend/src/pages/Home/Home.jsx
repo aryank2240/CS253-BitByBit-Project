@@ -114,7 +114,8 @@ const Home = () => {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         });
-        setFollowedBlogs(response?.data);
+         setFollowedBlogs(response?.data);
+        
       } catch (error) {
         console.error("Error fetching followed blogs:", error);
       }

@@ -69,7 +69,7 @@ const Blog = ({ blogId }) => {
   // Delete blog and refresh the page afterward
   const handleDelete = async () => {
     try {
-      await axios.delete(`api/blog/${blogId}`, {
+      await axios.delete(`http://localhost:5000/api/blog/${blogId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
@@ -120,7 +120,7 @@ const Blog = ({ blogId }) => {
       if (!blog) return;
       try {
         const response = await axios.get(
-          `api/user/${blog?.author}`,
+          `http://localhost:5000/api/user/${blog?.author}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ const Blog = ({ blogId }) => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(
-          `api/blog/${blogId}`,
+          `http://localhost:5000/api/blog/${blogId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -187,7 +187,7 @@ const Blog = ({ blogId }) => {
     const fetchTags = async () => {
       try {
         const response = await axios.get(
-          `api/blog/tag/${blogId}`,
+          `http://localhost:5000/api/blog/tag/${blogId}`,
           {
             headers: {
               'Content-Type': 'application/json',
