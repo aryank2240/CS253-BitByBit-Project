@@ -113,23 +113,37 @@ async function deleteUser(req, res) {
 async function updateUser(req, res) {
   try {
     const id = req.params.id;
-    const reqSender= req.user;
+    const reqSender = req.user;
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid user ID" });
     }
-   
-    const user = await User.findOneAndUpdate({ _id: id }, { $set: req.body }, { new: true, runValidators: true });
-    if (!user) return res.status(404).json({ error: "User not found" });
-    if(reqSender?._id!==user?._id&& reqSender?.role==='user'){
-      return res.status(401).json({ message: 'Not authorized, no token' });
+
+    // Fetch user first
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-    res.json(user);
-  }
-  catch (err) {
-    res.status(500).json({ error: err });
+
+    const isOwner = reqSender?._id.toString() === user._id.toString();
+    const isAdmin = reqSender?.role === 'admin';
+    if (!isOwner && !isAdmin) {
+      return res.status(401).json({ message: 'Not authorized to update this user' });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+
+    res.json(updatedUser);
+  } catch (err) {
     console.log(err);
+    res.status(500).json({ error: err });
   }
 }
+
 
 async function loginUser(req, res) {
   try {

@@ -74,7 +74,7 @@ const OwnProfilePage = () => {
   const editUser = async (e) => {
     try {
       if (!user) return;
-      const res = axios.patch(`http://localhost:5000/api/user/${user.id}`,
+      const res = axios.patch(`http://localhost:5000/api/user/${user?.id}`,
         {
           name
         }, {

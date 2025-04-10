@@ -77,15 +77,14 @@ async function deleteBlog(req, res) {
     if (!authorUser) {
       return res.status(404).json({ error: "User not found" });
     }
-    if(reqSender?._id!==authorUser?._id){
+    if(reqSender?._id.toString()  != authorUser?._id.toString() ){
+      console.log(reqSender, authorUser)
       return res.status(401).json({ error: "You are not authorised to delete this blog" });
     }
     if (authorUser) {
       authorUser.blogCount = Math.max(0, authorUser.blogCount - 1);
       await authorUser.save();
     }
-    
-    
     await User.updateMany(
       { Blogs: { $in: [id] } },
       { $pull: { Blogs: id } },
