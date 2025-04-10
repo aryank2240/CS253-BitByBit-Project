@@ -6,6 +6,7 @@ import Comment from './../models/Comment.js'
 import mongoose from 'mongoose';
 
 
+
 async function createBlog(req, res) {
   try {
     const newBlog = req.body;
@@ -32,7 +33,7 @@ async function createBlog(req, res) {
 async function getTopBlogs(req, res) {
   try {
     const blogs = await Blog.find().sort({ Upvote: -1 }).limit(8);
-    if (blogs.length === 0) return res.status(404).json({ error: "No blogs found" });
+ 
     res.json(blogs);
   }
   catch (err) {
