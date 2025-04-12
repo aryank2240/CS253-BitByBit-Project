@@ -164,7 +164,7 @@ const BlogEditor = () => {
           </button>
           <div className="blog-writer-avatar" onClick={() => navigate("/user-profile")}>
             <img
-              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`}
+              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`}
               alt="Profile"
               className="profile-image"
               style={{ height: "40px", width: "40px", cursor: "pointer" }}

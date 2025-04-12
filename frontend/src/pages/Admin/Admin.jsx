@@ -232,11 +232,13 @@ const Admin = () => {
                 <FiBell />
                 
               </button>
-              <button className="icon-button admin-profile">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="Admin Profile" className="admin-icon" 
+              <button className="icon-button" onClick={() => navigate('/user-profile')}>
+                <img
+                  src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`}
+                  alt="Anonymous User"
+                  className="user-icon"
                   style={{ width: '100%', height: '100%', borderRadius: '50%' }}
                 />
-                <span className="admin-indicator"></span>
               </button>
             </div>
           </div>

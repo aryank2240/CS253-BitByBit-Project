@@ -107,7 +107,7 @@ const Comment = ({ comment, updateComments }) => {
       <div className="comment-header">
         <div className="comment-user" onClick={navigateToUserProfile}>
           <img 
-            src={`https://api.dicebear.com/8.x/identicon/svg?seed=${comment.UserId?.name || 'Anonymous'}`} 
+            src={`https://api.dicebear.com/8.x/identicon/svg?seed=${comment.UserId?._id|| 'Anonymous'}`} 
             alt="User Avatar" 
             className="comment-avatar" 
           />

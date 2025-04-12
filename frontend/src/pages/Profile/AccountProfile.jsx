@@ -154,7 +154,7 @@ const AccountProfilePage = () => {
         <div className="left-section">
           <div className="profile-section">
             <img
-              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${account?.name}`}
+              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${account?._id}`}
               alt="Profile"
               className="profile-image"
             />

@@ -58,9 +58,7 @@ const OwnProfilePage = () => {
         navigate("/login");
       } else {
         setUser(decoded);
-        if (name == '') {
-          setName(decoded.name);// Ensure this contains the expected fields
-        }
+        
       }
     } catch (error) {
       console.error("Invalid token:", error);
@@ -70,25 +68,29 @@ const OwnProfilePage = () => {
   }, [navigate]);
 
 
-
-  const editUser = async (e) => {
+  const editUser = async () => {
     try {
       if (!user) return;
-      const res = axios.patch(`http://localhost:5000/api/user/${user?.id}`,
+  
+      const res = await axios.patch(
+        `http://localhost:5000/api/user/${user?.id}`,
+        { name },
         {
-          name
-        }, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
-        })
+        }
+      );
+      
+      setAccount(res?.data);
+      setName(res?.data?.name);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to update user:", error);
     }
-    catch (e) {
-      console.error(e);
-    }
-  }
-
+  };
+  
 
 
   useEffect(() => {
@@ -97,7 +99,7 @@ const OwnProfilePage = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/${user.id}/blogs`, {
+          `http://localhost:5000/api/user/${user?.id}/blogs`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -128,8 +130,8 @@ const OwnProfilePage = () => {
   };
 
 
-  const handleSave = (e) => {
-    editUser(e);
+  const handleSave = () => {
+    editUser();
     setIsEditing(false);
   };
 
@@ -167,7 +169,7 @@ const OwnProfilePage = () => {
         <div className="left-section">
 
           <div className="profile-section">
-            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt="Profile" className="profile-image" />
+            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${account?._id}`} alt="Profile" className="profile-image" />
 
 
             {isEditing ? (
@@ -176,7 +178,7 @@ const OwnProfilePage = () => {
                   type="text"
                   name="name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {setName(e.target.value)}}
                   className="edit-input"
                 />
 
@@ -196,7 +198,7 @@ const OwnProfilePage = () => {
 
             {isEditing ? (
               <>
-                <button className="save-btn" onClick={(e) => { handleSave(e) }} >Save</button>
+                <button className="save-btn" onClick={handleSave} >Save</button>
                 <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
               </>
             ) : (

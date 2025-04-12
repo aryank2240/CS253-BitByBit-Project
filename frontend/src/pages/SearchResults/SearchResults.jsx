@@ -167,7 +167,7 @@ const SearchResults = () => {
           </button>
           <div className="profile-icon" onClick={() => navigate('/user-profile')}>
             <img
-              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`}
+              src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`}
               alt="Profile"
               style={{ width: '100%', height: '100%', borderRadius: '50%' }}
             />

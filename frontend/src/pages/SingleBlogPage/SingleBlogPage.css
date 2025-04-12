@@ -116,6 +116,9 @@ body {
     align-items: center;
     margin-bottom: 15px;
 }
+.single-blog-post-content{
+padding-left: 20px;
+}
 
 .single-blog-author {
     display: flex;

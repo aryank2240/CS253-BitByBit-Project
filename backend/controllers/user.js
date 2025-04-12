@@ -126,7 +126,7 @@ async function updateUser(req, res) {
     }
 
     const isOwner = reqSender?._id.toString() === user._id.toString();
-    const isAdmin = reqSender?.role === 'admin';
+    const isAdmin = reqSender?.role.toString() === 'admin';
     if (!isOwner && !isAdmin) {
       return res.status(401).json({ message: 'Not authorized to update this user' });
     }

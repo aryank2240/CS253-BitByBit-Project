@@ -56,17 +56,15 @@ const Blog = ({ blogId }) => {
     }
   };
 
-  // Toggle dropdown options
   const handleOptionsToggle = () => {
     setShowOptions((prev) => !prev);
   };
 
-  // Navigate to edit page (with blogId passed in state)
   const handleEdit = () => {
     navigate(`/edit-blog`, { state: { blogId: blogId } });
   };
 
-  // Delete blog and refresh the page afterward
+
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:5000/api/blog/${blogId}`, {
@@ -114,7 +112,6 @@ const Blog = ({ blogId }) => {
   };
   
 
-  // Fetch blog author data once blog is set
   useEffect(() => {
     const fetchAuthor = async () => {
       if (!blog) return;
@@ -128,7 +125,7 @@ const Blog = ({ blogId }) => {
             },
           }
         );
-        setAuthor(response.data);
+        setAuthor(response?.data);
       } catch (error) {
         console.error("Error fetching blog:", error);
       }
@@ -136,7 +133,6 @@ const Blog = ({ blogId }) => {
     fetchAuthor();
   }, [blog]);
 
-  // Verify token, decode it, and set user data
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
@@ -159,7 +155,7 @@ const Blog = ({ blogId }) => {
     }
   }, [navigate]);
 
-  // Fetch blog data
+
   useEffect(() => {
     const fetchBlog = async () => {
       try {
@@ -198,7 +194,7 @@ const Blog = ({ blogId }) => {
         setTags(response.data);
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          // Optional: handle error 400 if necessary
+          
         } else {
           console.error("Error fetching Tags:", error);
         }
@@ -210,7 +206,6 @@ const Blog = ({ blogId }) => {
  
   return (
     <div className="blog-post" style={{ position: 'relative' }}>
-      {/* Three-dot options button in the top-right corner */}
       <div className="options-container" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 2 }}>
         <button
           onClick={handleOptionsToggle}
@@ -289,7 +284,7 @@ const Blog = ({ blogId }) => {
 
       <div className="author-info">
         <img
-          src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`}
+          src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name=="Anonymous" ?blog?.author_name:author?._id}`}
           alt={blog?.author}
           style={{
             width: "20px",
@@ -303,7 +298,7 @@ const Blog = ({ blogId }) => {
           }}
         />
         <div className="author-details">
-          <h3 className="author-name">{blog?.author_name}</h3>
+          <h3 className="author-name">{blog?.author_name=="Anonymous" ? blog?.author_name: author?.name}</h3>
           <p className="author-role">{blog?.role}</p>
           <div className="post-time">{ new Date(blog?.CreatedAt).toLocaleString("en-US", options).replace(",", " ·")}</div>
         </div>

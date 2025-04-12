@@ -172,7 +172,7 @@ const BlogWritingPage = () => {
         <div className="blog-writer-title">Build Your Blog✏️</div>
         <div className="blog-writer-header-controls">
           <button className="blog-writer-publish-btn" onClick={handlePublish} style={{cursor:'pointer'}}>Publish</button>
-          <div className="blog-writer-avatar" onClick={() => navigate('/user-profile')}> <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt="Profile" className="profile-image" style={{height:'40px',width:'40px',cursor:'pointer'}}/></div>
+          <div className="blog-writer-avatar" onClick={() => navigate('/user-profile')}> <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt="Profile" className="profile-image" style={{height:'40px',width:'40px',cursor:'pointer'}}/></div>
         </div>
       </header>
 

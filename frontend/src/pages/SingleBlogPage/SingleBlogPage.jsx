@@ -22,13 +22,8 @@ const SingleBlogPage = () => {
   const [tags, setTags] = useState([]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [authorName, setAuthorName] = useState('Anonymous');
-  const [email, setEmail] = useState('Anonymous')
-  const [blogCount, setBlogCount] = useState(0);
-  const [followersCount, setFollowersCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
-  // Add a state to track when new comments are added
+  const [author,setAuthor]= useState(null)
   const [newCommentAdded, setNewCommentAdded] = useState(false);
 
   useEffect(() => {
@@ -42,18 +37,13 @@ const SingleBlogPage = () => {
           }
         }
         );
-        if (authorName !== 'Anonymous') {
-          setEmail(response.data.email);
-          setBlogCount(response.data.blogCount);
-          setFollowersCount(response.data.followersCount);
-          setFollowingCount(response.data.followingCount);
-        }
+       setAuthor(response?.data);
       } catch (error) {
         console.error("Error fetching blog:", error);
       }
     };
     fetchAuthor();
-  }, [blog,authorName]);
+  }, [blog]);
   
   
   useEffect(() => {
@@ -123,7 +113,7 @@ const SingleBlogPage = () => {
         }
         const blogData = response?.data;
         setBlog(blogData);
-        setAuthorName(blogData?.author_name);
+        
         if (user?.id) {
           setIsSaved(blogData?.SavedBy?.includes(user?.id))
         }
@@ -208,7 +198,7 @@ const SingleBlogPage = () => {
 
         <div className="single-blog-header-right">
           <div className="single-blog-profile-icon small">
-            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black', cursor: 'pointer' }} onClick={() => { navigate(`/user-profile`) }} />
+            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black', cursor: 'pointer' }} onClick={() => { navigate(`/user-profile`) }} />
           </div>
           <button className="single-blog-add-new-post" onClick={() => navigate('/write')}>
             Add New Blog +
@@ -224,9 +214,9 @@ const SingleBlogPage = () => {
             <div className="single-blog-post-header">
               <div className="single-blog-author">
                 <div className="single-blog-profile-icon">
-                  <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'black' }} />
+                  <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name=="Anonymous" ?blog?.author_name:author?._id}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'black' }} />
                 </div>
-                <span className="single-blog-author-name">{blog?.author_name}</span>
+                <span className="single-blog-author-name">{blog?.author_name=="Anonymous" ?blog?.author_name:author?.name}</span>
               </div>
               <button className="single-blog-more-options">⋮</button>
             </div>
@@ -270,7 +260,7 @@ const SingleBlogPage = () => {
 
             <div className="single-blog-comment-input">
               <div className="single-blog-profile-icon small">
-                <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.name}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black' }} />
+                <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black' }} />
               </div>
               <input
                 type="text"
@@ -299,26 +289,26 @@ const SingleBlogPage = () => {
         <aside className="single-blog-profile">
           <div className="single-blog-profile-card">
             <div className="single-blog-profile-picture">
-              <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', border: 'black' }} />
+              <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name=="Anonymous" ?blog?.author_name:author?._id}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', border: 'black' }} />
               <div className="single-blog-online-indicator"></div>
             </div>
 
-            <h2 className="single-blog-profile-name">{blog?.author_name}</h2>
-            <p className="single-blog-profile-handle">{email}</p>
+            <h2 className="single-blog-profile-name">{blog?.author_name=="Anonymous" ?blog?.author_name:author?.name}</h2>
+            <p className="single-blog-profile-handle">{blog?.author_name=="Anonymous" ?"anonymous@iitk.ac.in":author?.email}</p>
 
             <div className="single-blog-stats">
               <div className="single-blog-stat">
-                <p className="single-blog-stat-value">{blogCount}</p>
+                <p className="single-blog-stat-value">{blog?.author_name=="Anonymous" ?"":author?.blogCount}</p>
                 <p className="single-blog-stat-label">Blogs</p>
               </div>
 
               <div className="single-blog-stat">
-                <p className="single-blog-stat-value">{followersCount}</p>
+                <p className="single-blog-stat-value">{blog?.author_name=="Anonymous" ?"":author?.followersCount}</p>
                 <p className="single-blog-stat-label">Followers</p>
               </div>
 
               <div className="single-blog-stat">
-                <p className="single-blog-stat-value">{followingCount}</p>
+                <p className="single-blog-stat-value">{blog?.author_name=="Anonymous" ?"":author?.followingCount}</p>
                 <p className="single-blog-stat-label">Following</p>
               </div>
             </div>
