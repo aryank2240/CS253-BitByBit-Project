@@ -105,6 +105,7 @@ const Blog = ({ blogId }) => {
   
       alert("Thank you for reporting this blog. Our team will review it soon.");
       setIsReported(true);
+      window.location.reload();
      
     } catch (error) {
       console.error("Error reporting blog:", error);

@@ -274,7 +274,11 @@ const Admin = () => {
       {/* Main Content */}
       <div className="main-content-container">
         <div className="feed-column">
-          {filteredBlogs.map(blog => (
+        {filteredBlogs.map((blog) => {
+          const shouldRenderBlog =
+          activeTab !== 'following' || blog?.author_name !== 'Anonymous';
+          if (!shouldRenderBlog) return null;
+          return(
             <div key={blog?._id} className="blog-wrapper">
               <Blog blogId={blog?._id} />
               {viewMode === 'reported' && (
@@ -293,8 +297,7 @@ const Admin = () => {
                   </div>
                 </div>
               )}
-            </div>
-          ))}
+            </div>);})}
         </div>
 
         <Sidebar  />

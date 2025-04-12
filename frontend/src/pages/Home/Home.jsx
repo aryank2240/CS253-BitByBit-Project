@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FiSearch,  FiBookmark} from 'react-icons/fi';
+import { FiSearch, FiBookmark } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Blog from '../../components/Blog/Blog';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import {Ring2}  from 'ldrs/react'
+import { Ring2 } from 'ldrs/react'
 import 'ldrs/react/Ring2.css'
 
 
@@ -25,7 +25,7 @@ const Home = () => {
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [savedBlogs, setSavedBlogs] = useState([]);
 
-  
+
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
 
@@ -43,7 +43,7 @@ const Home = () => {
         navigate("/login");
       } else {
         setUser(decoded);
-         // Ensure this contains the expected fields
+        // Ensure this contains the expected fields
       }
     } catch (error) {
       console.error("Invalid token:", error);
@@ -57,7 +57,7 @@ const Home = () => {
 
 
   useEffect(() => {
-    if(!user){return;}
+    if (!user) { return; }
     const fetchSavedBlog = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/SavedBlogs`, {
@@ -106,7 +106,7 @@ const Home = () => {
 
 
   useEffect(() => {
-    if(!user){return;}
+    if (!user) { return; }
     const fetchFollowedBlogs = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/user/${user?.id}/followedBlogs`, {
@@ -115,8 +115,8 @@ const Home = () => {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         });
-         setFollowedBlogs(response?.data);
-        
+        setFollowedBlogs(response?.data);
+
       } catch (error) {
         console.error("Error fetching followed blogs:", error);
       }
@@ -138,40 +138,40 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if(viewMode === 'saved') {
+    if (viewMode === 'saved') {
       setFilteredBlogs(savedBlogs);
     }
-    else{
+    else {
       if (activeTab === 'forYou') {
         setFilteredBlogs(blogs);
       } else if (activeTab === 'following') {
         setFilteredBlogs(followedBlogs);
+      }
     }
-  }
-    
-  }, [activeTab, blogs, followedBlogs,savedBlogs, viewMode]);
+
+  }, [activeTab, blogs, followedBlogs, savedBlogs, viewMode]);
 
   if (loading) return <div className="loading">
-<Ring2
-  size="40"
-  stroke="5"
-  strokeLength="0.25"
-  bgOpacity="0.1"
-  speed="0.8"
-  color="black" 
-/>
-</div>;
+    <Ring2
+      size="40"
+      stroke="5"
+      strokeLength="0.25"
+      bgOpacity="0.1"
+      speed="0.8"
+      color="black"
+    />
+  </div>;
   if (error) return <div className="error">Error: {error}</div>;
 
   return (
     // <div className='wrap'>
-    
+
     <div className="home-container">
       {/* Header Section */}
       <header className="header-content">
         <div className="header-main-row">
           <div className="search-add-container">
-            
+
             <div className="search-container">
               <input
                 type="text"
@@ -242,20 +242,21 @@ const Home = () => {
       {/* Main Content */}
       <div className="main-content-container">
         <div className="feed-column">
-          {filteredBlogs.map(blog => (
-            <div key={blog?._id} className="blog-wrapper">
-              <Blog blogId={blog?._id} />
-              {viewMode === 'reported' && blog.ReportCount > 0 && (
-                <div className="blog-actions">
-                  <span className="report-count">Reported {blog.ReportCount} Times</span>
-                </div>
-              )}
-            </div>
+          {filteredBlogs.map((blog) => {
+            const shouldRenderBlog =
+              activeTab !== 'following' || blog?.author_name !== 'Anonymous';
+            if (!shouldRenderBlog) return null;
+            return (
+              <div key={blog?._id} className="blog-wrapper">
+                <Blog blogId={blog?._id} />
+              </div>
+            );
+          })}
 
-          ))}
+
 
         </div>
-        <Sidebar  />
+        <Sidebar />
       </div>
     </div>
     // </div>
