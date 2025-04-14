@@ -143,7 +143,7 @@ const SearchResults = () => {
       <header className="search-results-header">
 
         <div className='search-results-header-left'>
-          <IoReturnDownBackOutline size={30} onClick={() => { window.history.back() }} style={{ cursor: 'pointer', }} />
+          <IoReturnDownBackOutline size={30} onClick={() => { navigate('/') }} style={{ cursor: 'pointer', }} />
           <div className="search-container">
 
             <input

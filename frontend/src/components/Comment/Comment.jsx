@@ -110,6 +110,7 @@ const Comment = ({ comment, updateComments }) => {
             src={`https://api.dicebear.com/8.x/identicon/svg?seed=${comment.UserId?._id|| 'Anonymous'}`} 
             alt="User Avatar" 
             className="comment-avatar" 
+            
           />
           <span className="comment-username">{comment.UserId?.name || 'Anonymous'}</span>
         </div>

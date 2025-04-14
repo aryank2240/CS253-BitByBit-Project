@@ -238,6 +238,7 @@ const Admin = () => {
                   alt="Anonymous User"
                   className="user-icon"
                   style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                  
                 />
               </button>
             </div>

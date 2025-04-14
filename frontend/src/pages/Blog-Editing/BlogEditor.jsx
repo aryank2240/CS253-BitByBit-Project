@@ -168,6 +168,7 @@ const BlogEditor = () => {
               alt="Profile"
               className="profile-image"
               style={{ height: "40px", width: "40px", cursor: "pointer" }}
+              
             />
           </div>
         </div>

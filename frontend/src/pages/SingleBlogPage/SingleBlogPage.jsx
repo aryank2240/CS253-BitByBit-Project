@@ -1,4 +1,4 @@
-import {  useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
@@ -8,7 +8,7 @@ import rehypeRaw from 'rehype-raw'
 import { FiSearch, FiBookmark } from 'react-icons/fi';
 import { FaRegShareSquare, FaRegCommentDots } from "react-icons/fa";
 import VoteComponent from "../../components/Vote/Vote"
-import {  TwitterShareButton } from 'react-share'
+import { TwitterShareButton } from 'react-share'
 import { LuSendHorizontal } from "react-icons/lu";
 // Import the new CommentList component
 import CommentList from "../../components/Comment/CommentList";
@@ -23,7 +23,7 @@ const SingleBlogPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSaved, setIsSaved] = useState(false);
-  const [author,setAuthor]= useState(null)
+  const [author, setAuthor] = useState(null)
   const [newCommentAdded, setNewCommentAdded] = useState(false);
 
   useEffect(() => {
@@ -37,15 +37,15 @@ const SingleBlogPage = () => {
           }
         }
         );
-       setAuthor(response?.data);
+        setAuthor(response?.data);
       } catch (error) {
         console.error("Error fetching blog:", error);
       }
     };
     fetchAuthor();
   }, [blog]);
-  
-  
+
+
   useEffect(() => {
     const fetchTags = async () => {
       try {
@@ -65,7 +65,7 @@ const SingleBlogPage = () => {
       }
     };
     fetchTags();
-  }, [blogId,navigate])
+  }, [blogId, navigate])
 
   const handleSearch = () => {
     if (searchTerm.trim()) {
@@ -113,7 +113,7 @@ const SingleBlogPage = () => {
         }
         const blogData = response?.data;
         setBlog(blogData);
-        
+
         if (user?.id) {
           setIsSaved(blogData?.SavedBy?.includes(user?.id))
         }
@@ -126,7 +126,7 @@ const SingleBlogPage = () => {
       }
     };
     fetchBlog();
-  }, [blogId, user,navigate]);
+  }, [blogId, user, navigate]);
 
   const addComments = async () => {
     if (!comment) return;
@@ -141,16 +141,18 @@ const SingleBlogPage = () => {
         UserId
 
       }, {
-        headers: { "Content-Type": "application/json" ,
+        headers: {
+          "Content-Type": "application/json",
           'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
 
         },
-      
+
       });
-  
+
       setComment("");
       // Toggle newCommentAdded to trigger a refresh in CommentList
       setNewCommentAdded(prev => !prev);
+      window.location.reload();
     } catch (err) {
       console.log(err);
     }
@@ -161,11 +163,11 @@ const SingleBlogPage = () => {
     try {
       await axios.put(`http://localhost:5000/api/user/${user.id}/saveBlogs`,
         { blogId }, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-            }
-          }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+        }
+      }
       );
       setIsSaved(true);
     } catch (error) {
@@ -179,8 +181,8 @@ const SingleBlogPage = () => {
       {/* Header/Navigation */}
       <header className="single-blog-header">
         <div className="search-add-container">
-                  <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
-          
+          <IoReturnDownBackOutline size={30} onClick={() => { window.history.back() }} style={{ cursor: 'pointer', }} />
+
           <div className="search-container">
             <input
               type="text"
@@ -198,7 +200,7 @@ const SingleBlogPage = () => {
 
         <div className="single-blog-header-right">
           <div className="single-blog-profile-icon small">
-            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black', cursor: 'pointer' }} onClick={() => { navigate(`/user-profile`) }} />
+            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '100%',border: 'purple 0.5px solid' , cursor:'pointer' }} onClick={() => { navigate(`/user-profile`) }} />
           </div>
           <button className="single-blog-add-new-post" onClick={() => navigate('/write')}>
             Add New Blog +
@@ -214,21 +216,24 @@ const SingleBlogPage = () => {
             <div className="single-blog-post-header">
               <div className="single-blog-author">
                 <div className="single-blog-profile-icon">
-                  <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name=="Anonymous" ?blog?.author_name:author?._id}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'black' }} />
+                  <img onClick={() => {
+                    if (author?._id === user.id) navigate(`/user-profile`);
+                    else if (blog?.author_name !== "Anonymous") navigate(`/account/${author?._id}`);
+                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name == "Anonymous" ? blog?.author_name : author?._id}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'purple 1px solid' , cursor:'pointer'}} />
                 </div>
-                <span className="single-blog-author-name">{blog?.author_name=="Anonymous" ?blog?.author_name:author?.name}</span>
+                <span className="single-blog-author-name">{blog?.author_name == "Anonymous" ? blog?.author_name : author?.name}</span>
               </div>
               <button className="single-blog-more-options">⋮</button>
             </div>
 
             <div className="single-blog-post-content">
               <h2 className="single-blog-post-title">{blog?.title}</h2>
-              {tags.map(tag =>(
-                <p style={{color:"purple"}}>{`#${tag?.name}`}</p>
+              {tags.map(tag => (
+                <p style={{ color: "purple" }}>{`#${tag?.name}`}</p>
               ))}
-              <p className="single-blog-post-text">
+              <span className="single-blog-post-text">
                 <ReactMarkdown rehypePlugins={[rehypeRaw]}>{blog?.content}</ReactMarkdown>
-              </p>
+              </span>
 
               <div className="single-blog-hashtags">
               </div>
@@ -245,10 +250,10 @@ const SingleBlogPage = () => {
               </div>
 
               <div className="single-blog-share-section">
-                <button className="single-blog-share-button">
+                <div className="single-blog-share-button">
                   <span className="share-icon">Share</span>
                   <span><TwitterShareButton url={window.location.href} quote={`Check out this blog....`}><FaRegShareSquare /></TwitterShareButton></span>
-                </button>
+                </div>
               </div>
 
               <div className="single-blog-bookmark-section">
@@ -260,7 +265,10 @@ const SingleBlogPage = () => {
 
             <div className="single-blog-comment-input">
               <div className="single-blog-profile-icon small">
-                <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '50%', border: 'black' }} />
+                <img onClick={() => {
+                    if (author?._id === user?.id) navigate(`/user-profile`);
+                    else if (blog?.author_name !== "Anonymous") navigate(`/account/${author?._id}`);
+                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', cursor:'pointer'}} />
               </div>
               <input
                 type="text"
@@ -289,26 +297,29 @@ const SingleBlogPage = () => {
         <aside className="single-blog-profile">
           <div className="single-blog-profile-card">
             <div className="single-blog-profile-picture">
-              <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name=="Anonymous" ?blog?.author_name:author?._id}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', border: 'black' }} />
+              <img onClick={() => {
+                    if (author?._id === user.id) navigate(`/user-profile`);
+                    else if (blog?.author_name !== "Anonymous") navigate(`/account/${author?._id}`);
+                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name == "Anonymous" ? blog?.author_name : author?._id}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', border: 'purple', cursor:'pointer' }} />
               <div className="single-blog-online-indicator"></div>
             </div>
 
-            <h2 className="single-blog-profile-name">{blog?.author_name=="Anonymous" ?blog?.author_name:author?.name}</h2>
-            <p className="single-blog-profile-handle">{blog?.author_name=="Anonymous" ?"anonymous@iitk.ac.in":author?.email}</p>
+            <h2 className="single-blog-profile-name">{blog?.author_name == "Anonymous" ? blog?.author_name : author?.name}</h2>
+            <p className="single-blog-profile-handle">{blog?.author_name == "Anonymous" ? "anonymous@iitk.ac.in" : author?.email}</p>
 
             <div className="single-blog-stats">
               <div className="single-blog-stat">
-                <p className="single-blog-stat-value">{blog?.author_name=="Anonymous" ?"":author?.blogCount}</p>
+                <p className="single-blog-stat-value">{blog?.author_name == "Anonymous" ? "" : author?.blogCount}</p>
                 <p className="single-blog-stat-label">Blogs</p>
               </div>
 
               <div className="single-blog-stat">
-                <p className="single-blog-stat-value">{blog?.author_name=="Anonymous" ?"":author?.followersCount}</p>
+                <p className="single-blog-stat-value">{blog?.author_name == "Anonymous" ? "" : author?.followersCount}</p>
                 <p className="single-blog-stat-label">Followers</p>
               </div>
 
               <div className="single-blog-stat">
-                <p className="single-blog-stat-value">{blog?.author_name=="Anonymous" ?"":author?.followingCount}</p>
+                <p className="single-blog-stat-value">{blog?.author_name == "Anonymous" ? "" : author?.followingCount}</p>
                 <p className="single-blog-stat-label">Following</p>
               </div>
             </div>

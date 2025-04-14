@@ -151,7 +151,6 @@ async function putTag(req, res) {
 async function getPopularTags(req, res) {
   try {
     const tags = await Tag.find().sort({ count: -1 }).limit(3);
-    if (!tags || tags.length === 0) return res.status(404).json({ error: "No tags found" });
 
     res.json(tags);
   }

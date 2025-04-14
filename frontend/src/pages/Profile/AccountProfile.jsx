@@ -157,6 +157,7 @@ const AccountProfilePage = () => {
               src={`https://api.dicebear.com/8.x/identicon/svg?seed=${account?._id}`}
               alt="Profile"
               className="profile-image"
+              
             />
             <div>
               <h2>{account?.name}</h2>
