@@ -237,7 +237,7 @@ const Admin = () => {
                   src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`}
                   alt="Anonymous User"
                   className="user-icon"
-                  style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                  style={{ width: '100%', height: '100%', borderRadius: '50%',  }}
                   
                 />
               </button>

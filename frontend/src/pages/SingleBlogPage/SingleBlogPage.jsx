@@ -200,7 +200,7 @@ const SingleBlogPage = () => {
 
         <div className="single-blog-header-right">
           <div className="single-blog-profile-icon small">
-            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '100%',border: 'purple 0.5px solid' , cursor:'pointer' }} onClick={() => { navigate(`/user-profile`) }} />
+            <img src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', borderRadius: '100%',cursor:'pointer' }} onClick={() => { navigate(`/user-profile`) }} className="profile-image" />
           </div>
           <button className="single-blog-add-new-post" onClick={() => navigate('/write')}>
             Add New Blog +
@@ -219,7 +219,7 @@ const SingleBlogPage = () => {
                   <img onClick={() => {
                     if (author?._id === user.id) navigate(`/user-profile`);
                     else if (blog?.author_name !== "Anonymous") navigate(`/account/${author?._id}`);
-                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name == "Anonymous" ? blog?.author_name : author?._id}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'purple 1px solid' , cursor:'pointer'}} />
+                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name == "Anonymous" ? blog?.author_name : author?._id}`} alt={'author'} style={{ width: '40px', height: '40px', borderRadius: '50%',  cursor:'pointer'}} className="profile-image"/>
                 </div>
                 <span className="single-blog-author-name">{blog?.author_name == "Anonymous" ? blog?.author_name : author?.name}</span>
               </div>
@@ -268,7 +268,7 @@ const SingleBlogPage = () => {
                 <img onClick={() => {
                     if (author?._id === user?.id) navigate(`/user-profile`);
                     else if (blog?.author_name !== "Anonymous") navigate(`/account/${author?._id}`);
-                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', cursor:'pointer'}} />
+                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${user?.id}`} alt={'user'} style={{ width: '33px', height: '33px', cursor:'pointer'}}  className="profile-image"/>
               </div>
               <input
                 type="text"
@@ -300,7 +300,7 @@ const SingleBlogPage = () => {
               <img onClick={() => {
                     if (author?._id === user.id) navigate(`/user-profile`);
                     else if (blog?.author_name !== "Anonymous") navigate(`/account/${author?._id}`);
-                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name == "Anonymous" ? blog?.author_name : author?._id}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', border: 'purple', cursor:'pointer' }} />
+                  }} src={`https://api.dicebear.com/8.x/identicon/svg?seed=${blog?.author_name == "Anonymous" ? blog?.author_name : author?._id}`} alt={'user'} style={{ width: '100px', height: '100px', borderRadius: '50%', cursor:'pointer' }} className="profile-image" />
               <div className="single-blog-online-indicator"></div>
             </div>
 
