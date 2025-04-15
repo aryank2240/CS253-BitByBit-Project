@@ -28,6 +28,25 @@ const register = async (req, res) => {
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
+      // Check if the user exists but hasn't verified their email
+      if (!userExists.emailVerified) {
+        // Generate a new OTP
+        const otp = generateOTP();
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+        
+        userExists.emailVerificationOTP = otp;
+        userExists.emailVerificationOTPExpiry = otpExpiry;
+        await userExists.save();
+        
+        // Send new verification OTP
+        await sendVerificationEmail(email, otp);
+        
+        return res.status(200).json({ 
+          message: 'User already registered but not verified. A new verification OTP has been sent to your email.',
+          userId: userExists._id,
+          requireVerification: true
+        });
+      }
       return res.status(400).json({ message: 'User already exists' });
     }
 

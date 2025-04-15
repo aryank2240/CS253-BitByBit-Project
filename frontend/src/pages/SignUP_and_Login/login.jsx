@@ -11,35 +11,44 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault();
-        setError("");
-        setSuccess("");
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
-        try {
-            const response = await axios.post(
-                "http://localhost:5000/api/auth/login",
-                { email, password }, {
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-                  }
-                }
-            );
-            
-            const { token , user} = response.data;
-            localStorage.setItem("jwtToken", token);
-            setSuccess("Login successful! Redirecting...");
-            if(user?.role==='admin'){
-              setTimeout(() => navigate("/admin"), 2000);
+    try {
+        const response = await axios.post(
+            "http://localhost:5000/api/auth/login",
+            { email, password }, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+              }
             }
-            else{
-              setTimeout(() => navigate("/"), 2000); // Redirect after 2s
-            }
-            
-        } catch (error) {
-            console.error("Login Error:", error.response?.message || error.message);
+        );
+        
+        const { token, user } = response.data;
+        localStorage.setItem("jwtToken", token);
+        setSuccess("Login successful! Redirecting...");
+        if(user?.role==='admin'){
+          setTimeout(() => navigate("/admin"), 2000);
+        }
+        else{
+          setTimeout(() => navigate("/"), 2000); // Redirect after 2s
+        }
+        
+    } catch (error) {
+        console.error("Login Error:", error.response?.data || error.message);
+        
+        // Check if the error is due to email not being verified
+        if (error.response?.data?.userId && error.response?.status === 401) {
+            // Redirect to OTP verification page with userId
+            navigate("/otp", {
+                state: { userId: error.response.data.userId }
+            });
+        } else {
             setError(error.response?.data?.message || "Invalid email or password");
         }
+    }
     };
 
     

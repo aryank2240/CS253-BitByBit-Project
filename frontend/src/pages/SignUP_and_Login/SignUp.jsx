@@ -20,16 +20,15 @@ const SignUpCard = () => {
         }
 
     const handleSignUp = async () => {
-
-        try {
-            if(password&&password.length<6){
-              setError('Password should be more than or equal to 6 characters');
-              return;
-            }
-            if (password===confirmPassword){
+    try {
+        if(password && password.length < 6){
+          setError('Password should be more than or equal to 6 characters');
+          return;
+        }
+        if (password === confirmPassword){
             const response = await axios.post(
                 "http://localhost:5000/api/auth/register",
-                { name, email, password,  role: "user"}, {
+                { name, email, password, role: "user"}, {
                   headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -37,19 +36,29 @@ const SignUpCard = () => {
                 }
             );
 
+            // Check if this is a case of an existing unverified user
+            if (response.data.requireVerification) {
+                setSuccess("A verification code has been sent to your email.");
+                setTimeout(() => {
+                    navigate("/otp", {
+                        state: { userId: response.data.userId }
+                    });
+                }, 2000);
+                return;
+            }
+            
             setSuccess(response.data.message);
             setTimeout(() => navigate("/otp", {
-              state: { userId:`${response.data.userId}` },
+              state: { userId: response.data.userId },
             }), 2000);
-         }
-         else{
+        } else {
             setError("Passwords don't match with each other.")
-         } // Redirect after 2s
-        } catch (error) {
-            console.error("Signup Error:", error.response?.data || error.message);
-            setError(error.response?.data?.message || "Something went wrong");
         }
-    };
+    } catch (error) {
+        console.error("Signup Error:", error.response?.data || error.message);
+        setError(error.response?.data?.message || "Something went wrong");
+        }
+};
 
     return (
         <div className="signup-card">
