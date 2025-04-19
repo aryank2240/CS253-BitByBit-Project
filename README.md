@@ -52,6 +52,7 @@ Create the .env files for configurations.
 touch .env
 ```
 Put these values in the .env file for the configuration.
+Use App password for EMAIL_PASSWORD if you are using a gmail account.
 ```bash
 MONGO_URL , SMTP_HOST ,SMTP_PORT , SMTP_SECURE, EMAIL_USERNAME, EMAIL_PASSWORD, JWT_SECRET
 ```
