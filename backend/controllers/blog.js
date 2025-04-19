@@ -77,7 +77,7 @@ async function deleteBlog(req, res) {
     if (!authorUser) {
       return res.status(404).json({ error: "User not found" });
     }
-    if(reqSender?._id.toString()  != authorUser?._id.toString() ){
+    if(reqSender?._id.toString()  != authorUser?._id.toString() && reqSender?.role!=='admin'){
       console.log(reqSender, authorUser)
       return res.status(401).json({ error: "You are not authorised to delete this blog" });
     }
