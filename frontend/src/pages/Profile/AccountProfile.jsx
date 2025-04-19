@@ -163,7 +163,7 @@ const AccountProfilePage = () => {
               <h2>{account?.name}</h2>
               <p>{account?.email}</p>
             </div>
-            <p>{account?.blogs.length} Blogs</p>
+            <p>{account?.blogs?.length} Blogs</p>
             <div className="follow-info">
               <span>{account?.followingCount} Following</span> |{" "}
               <span>{account?.followersCount} Followers</span>

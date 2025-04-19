@@ -309,7 +309,7 @@ const SingleBlogPage = () => {
 
             <div className="single-blog-stats">
               <div className="single-blog-stat">
-                <p className="single-blog-stat-value">{blog?.author_name == "Anonymous" ? "" : author?.blogs.length}</p>
+                <p className="single-blog-stat-value">{blog?.author_name == "Anonymous" ? "" : author?.blogs?.length}</p>
                 <p className="single-blog-stat-label">Blogs</p>
               </div>
 

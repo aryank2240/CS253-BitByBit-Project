@@ -151,7 +151,7 @@ const OwnProfilePage = () => {
     <div className="profile-container">
 
 
-      <div className="search-add-container">
+      <div className="search-add-container-profile">
                           <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
         
         <div className="search-container">
@@ -203,7 +203,7 @@ const OwnProfilePage = () => {
               </>
             )}
 
-            <p>{account?.blogs.length} Blogs</p>
+            <p>{account?.blogs?.length} Blogs</p>
             <div className="follow-info">
               <span>{account?.followingCount} Following</span> | <span>{account?.followersCount} Followers</span>
             </div>
