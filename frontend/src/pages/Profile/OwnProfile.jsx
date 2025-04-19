@@ -7,6 +7,12 @@ import Blog from "../../components/Blog/Blog.js";
 import { FiSearch, } from 'react-icons/fi';
 import { IoReturnDownBackOutline } from "react-icons/io5";
 import WritersSuggestion from "../../components/WritersSuggestion/WritersSuggestion.jsx";
+import { CgLogOut } from "react-icons/cg";
+
+const handleLogout = () => {
+  localStorage.removeItem('jwtToken');
+  window.location.href = '/login';
+};
 
 const OwnProfilePage = () => {
   
@@ -161,6 +167,13 @@ const OwnProfilePage = () => {
             <FiSearch className="search-icon" />
           </button>
         </div>
+        
+        <button
+          className={`icon-button-logout`}
+          onClick={() => {handleLogout()}}
+        >
+          <CgLogOut />
+        </button>
       </div>
 
 
