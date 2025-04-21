@@ -203,7 +203,7 @@ const OwnProfilePage = () => {
               </>
             )}
 
-            <p>{account?.blogs?.length} Blogs</p>
+            <p>{account?.blogCount} Blogs</p>
             <div className="follow-info">
               <span>{account?.followingCount} Following</span> | <span>{account?.followersCount} Followers</span>
             </div>

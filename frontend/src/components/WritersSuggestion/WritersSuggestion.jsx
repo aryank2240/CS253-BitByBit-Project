@@ -42,7 +42,7 @@ const WritersSuggestion = () => {
 
             >
               <span className="tag-name"onClick={()=>{navigate(`/account/${tag?._id}`)}}>{tag?.name}</span>
-              <span className="tag-count">{tag?.blogCount}</span>
+              <span className="tag-count">{}</span>
             </div>
           ))}
         </div>

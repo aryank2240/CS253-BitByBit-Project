@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./OwnProfile.css";
 import { useNavigate, useParams } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 import Blog from "../../components/Blog/Blog.js";
 import { FiSearch } from "react-icons/fi";
 import { IoReturnDownBackOutline } from "react-icons/io5";
+
+
 
 const AccountProfilePage = () => {
   const [isFollowing, setIsFollowing] = useState(false);
@@ -18,8 +20,25 @@ const AccountProfilePage = () => {
   const [name, setName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState(null);
+  const [blogCount,setBlogCount]=useState(0)
+
+
+  useEffect(() => {
+    const getBlogNumber = () => {
+      if(!userBlogs){return;}
+      let count=0;
+      userBlogs
+        .filter((blog) => blog?.author_name !== "Anonymous")
+        .map(() => (
+          count=count+1
+        ))
+        return count;
+    }
+    setBlogCount(getBlogNumber())
+  }, [userBlogs])
 
   // Updated handleFollowClick function using template literals
+
   const handleFollowClick = async () => {
     if (!user) {
       console.log("User not found");
@@ -30,11 +49,11 @@ const AccountProfilePage = () => {
       const res = await axios.put(
         `http://localhost:5000/api/user/${user?.id}/follow`,
         { accountId }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-          }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
         }
+      }
       );
       if (res.status === 200) {
         // Update isFollowing using the backend response
@@ -83,18 +102,18 @@ const AccountProfilePage = () => {
       try {
         const res = await axios.get(
           `http://localhost:5000/api/user/${accountId}`, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-            }
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
+        }
         );
         setAccount(res?.data);
         if (!name) {
           setName(res?.data?.name);
         }
         if (user && res?.data?._id) {
-          setIsFollowing( res?.data?.followers.includes(user?.id));
+          setIsFollowing(res?.data?.followers.includes(user?.id));
         }
       } catch (e) {
         console.error("Error fetching the account's data:", e);
@@ -110,11 +129,11 @@ const AccountProfilePage = () => {
       try {
         const res = await axios.get(
           `http://localhost:5000/api/user/${accountId}/blogs`, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-            }
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
+        }
         );
         setUserBlogs(res.data);
       } catch (error) {
@@ -133,8 +152,8 @@ const AccountProfilePage = () => {
   return (
     <div className="profile-container">
       <div className="search-add-container">
-                          <IoReturnDownBackOutline  size={30} onClick={()=>{window.history.back()}} style={{cursor:'pointer',}}/>
-        
+        <IoReturnDownBackOutline size={30} onClick={() => { window.history.back() }} style={{ cursor: 'pointer', }} />
+
         <div className="search-container">
           <input
             type="text"
@@ -157,13 +176,13 @@ const AccountProfilePage = () => {
               src={`https://api.dicebear.com/8.x/identicon/svg?seed=${account?._id}`}
               alt="Profile"
               className="profile-image"
-              
+
             />
             <div>
               <h2>{account?.name}</h2>
               <p>{account?.email}</p>
             </div>
-            <p>{account?.blogs?.length} Blogs</p>
+            <p>{blogCount} Blogs</p>
             <div className="follow-info">
               <span>{account?.followingCount} Following</span> |{" "}
               <span>{account?.followersCount} Followers</span>
@@ -176,8 +195,8 @@ const AccountProfilePage = () => {
               {loading
                 ? "Processing..."
                 : isFollowing
-                ? "Following"
-                : "Follow"}
+                  ? "Following"
+                  : "Follow"}
             </button>
           </div>
 
